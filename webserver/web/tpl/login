@@ -1,0 +1,9 @@
+<p>Log me in</p>
+            <form action="javascript:login()">
+         <div text-align="center">
+         <input autocomplete placeholder="john.doe@gmail.com" required type="email" id="email" name="email"><br><br>
+         <input autocomplete placeholder="password" required type="password" id="password" name="password"><br><br>
+         <input type="submit" value="🔑 Login"></form> <hr>
+         <input type="submit" onclick="javascript:window.location.assign(\'?action=register\');" value="📒 Register"><br><br>
+         <input type="submit" onclick="javascript:window.location.assign(\'?action=recover1\');" value="❓ Recover password">
+         </div></form>

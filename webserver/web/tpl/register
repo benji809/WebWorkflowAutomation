@@ -1,0 +1,21 @@
+<p>Register a new account</p>
+        <form action="javascript:register()">
+         <div text-align="center">
+         <input  placeholder="John" required type="text" id="fname" name="fname"><span style="color:red">*</span><br><br>
+         <input  placeholder="Doe" required type="text" id="lname" name="lname"><span style="color:red">*</span><br><br>
+         <input  placeholder="john.doe@gmail.com" required type="email" id="email" name="email"><span style="color:red">*</span><br><br>
+         <input  placeholder="password" required type="password" id="password1" name="password1"><span style="color:red">*</span><br><br>
+         <input  placeholder="password confirmation" required id="password2" name="password2" type="password"><span style="color:red">*</span><br><br>
+         <input  placeholder="job title"  id="job" name="job" type="text">&nbsp;<br><br>
+         <input  placeholder="company"  id="company" name="company" type="text">&nbsp;<br><br>
+         <select  required id="how" name="how">
+            <option value="">How did you know about us ?</option>
+            <option value="Google">Google</option>
+            <option value="Linkedin">Linkedin</option>
+            <option value="Teamates">Teamates</option>
+            <option value="Other">Other</option>
+         </select><span style="color:red">*</span><br><br>
+         
+         
+          <input style="width:"50px;" type="submit" value="🔑 Register">&nbsp;
+         </div></form>

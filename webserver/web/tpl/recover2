@@ -1,0 +1,8 @@
+<p>Recover my password</p>
+            <form action="javascript:changepassword()">
+         <div text-align="center">
+         <input  placeholder="password" required type="password" id="password1" name="password1"><span style="color:red">*</span><br><br>
+         <input  placeholder="password confirmation" required id="password2" name="password2" type="password"><span style="color:red">*</span><br><br>
+         <input  hidden name="key" id="key" value="#value" <span style="color:red">
+          <input style="width:"50px;" type="submit" value="🔑 Recover">&nbsp;
+         </div></form>

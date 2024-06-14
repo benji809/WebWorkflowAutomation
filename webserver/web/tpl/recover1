@@ -1,0 +1,6 @@
+<p>Recover my password</p>
+            <form action="javascript:recover()">
+         <div text-align="center">
+         <input  placeholder="john.doe@gmail.com" required type="email" id="email" name="email"><span style="color:red">*</span><br><br>
+          <input style="width:"50px;" type="submit" value="🔑 Recover">&nbsp;
+         </div></form>

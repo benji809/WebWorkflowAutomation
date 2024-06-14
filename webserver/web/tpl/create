@@ -1,0 +1,37 @@
+<div text-align="center">
+            <p>Create a new workflow</p>
+        <form action="javascript:create()">
+         <input  placeholder="My Workflow" required type="text" id="name" name="name"><span style="color:red">*</span><br><br>
+         <input  placeholder="https://www.google.com" required name="url" id="url" type="url"><span style="color:red">*</span><br><br>
+          <select required name="sendm" id="sendm">
+            <option value="">Send the result via e-mail</option>
+            <option value="1">Yes</option>
+            <option value="0">No</option>
+            </select><span style="color:red">*</span><br><br>
+         <select required onchange="showhide()" name="startm" id="startm">
+            <option value="">Start automatically</option>
+            <option value="1">Yes</option>
+            <option value="0">No</option>
+          </select><span style="color:red">*</span><br><br>
+          <div id="dyndiv" style="visibility:hidden">
+            <select name="every">
+            <option value="">Start every</option>
+            <option value="1">minute</option>
+            <option value="60">hour</option>
+            <option value="1440">day</option>
+            <option value="10080">week</option>
+            <option value="40320">month</option>
+            </select><span style="color:red">*</span><br><br>
+            
+            <input 
+              type="datetime-local"
+              class="hiddenf"
+              name="meeting-time"
+              id="meeting-time"
+           /><span style="color:red">*</span><br><br>
+     
+
+
+        </div>
+          <input style="width:"50px;" type="submit" value="🔑 Create">&nbsp;
+         </form></div>
