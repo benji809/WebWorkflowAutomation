@@ -17,7 +17,7 @@ if(data == "false") return "false";
 return JSON.parse(data);
 
     /*
-const con = mariadb.createPool({
+const con = mariadb.createPool({ nouveau commentaire
     host: "109.234.164.193",
     user: "opmp8948_sql",
     password: "SQLopmp89484212..",
