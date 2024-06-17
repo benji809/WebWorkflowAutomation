@@ -1,6 +1,6 @@
 const {createsession} = require('./create.js');
 const {getvideo,scroll,move,keyboard,mousedown,mouseup} = require('./others.js');
-const {session,sessions} = require('./data.js');
+const {sessions} = require('./data.js');
 
 exports.dispatch = function (req,res)
 {
@@ -20,8 +20,8 @@ else{
 	}
 	else
 	{
-		if(req.query.action == "scroll") scroll(s,req.query.dy);
-		if(req.query.action == "move") move(s,req.query.x,req.query.y);
+		if(req.query.action == "scroll") scroll(s,req.query.dy*1920);
+		if(req.query.action == "move") move(s,req.query.x*1920,req.query.y*1080);
 		if(req.query.action == "keyboard") keyboard(s,req.query.key);
 		if(req.query.action == "mousedown") mousedown(s);
 		if(req.query.action == "mouseup") mouseup(s);

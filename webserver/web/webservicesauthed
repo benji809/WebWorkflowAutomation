@@ -1,0 +1,44 @@
+var {cleandata,getid} = require('../common/utils.js');
+var {query} = require('../common/sql.js');
+
+exports.docreatewf = async function (req) 
+{
+    var data = JSON.parse(req.query.data);
+    data = cleandata(data);
+    var result = await query("INSERT INTO `workflows`(`wf`, `launcha`, `startdate`, `every`, `sendemail`, `name`, `creationdate`,`userid`) VALUES ('" + data[4] + "'," + data[1] + "," + data[3] + "," + data[2] + "," + data[5] + ",'" + data[0] + "'," + Date.now() + "," + getid(req) + ")");
+
+    if(result) return "OK";
+    else return "NOK";
+}
+
+exports.dologout = function (req)
+{
+    req.session.isLoggedIn = false;
+    req.session.userid = -1;
+    return "OK";
+}
+
+exports.deletewf = async function (req)
+{
+    var key = req.query.key;
+    if(key == "") return;
+    var r1 = await query("DELETE FROM `workflows` WHERE `id` = " + key + " AND `userid` = " + getid(req));
+    if(!r1) return "NOK";
+    await query("DELETE FROM `runs` WHERE `wfid` =`" + key + "`");
+    return "OK";
+}
+exports.togglewf = async function (req)
+{
+    var key = req.query.key;
+    if(key == "") return;
+    var row = await query("SELECT * FROM `workflows` WHERE id =" + key + " AND `userid` =" + getid(req));
+    if(row.length == 0) return "NOK";
+    var result = false;
+    if(row[2] == 2) result = await query("UPDATE `workflows` SET `launcha`= 1 WHERE `id` = " + key);
+    else if(row[2] == 1) result = await query("UPDATE `workflows` SET `launcha`= 2 WHERE `id` = " + key);
+    else if(row[5] == 0) result = await query("UPDATE `workflows` SET `startm`= 1 WHERE `id` = " + key);
+    else if(row[5] == 1) result = await query("UPDATE `workflows` SET `startm`= 0 WHERE `id` = " + key);
+    if(result) return "OK";
+    else return "NOK";
+}
+

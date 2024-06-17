@@ -2,7 +2,7 @@ function deletewf(id)
 {
             if(!confirm("Sure you want to delete it ?")) return;
             
-             fetch("https://www.bestautomation.me/workflow/?action=deletewf&key=" + id)
+             fetch("?dest=web&action=deletewf&key=" + id)
                               .then((response) => {
                       return response.text();
                     })
@@ -14,7 +14,7 @@ function deletewf(id)
 function togglewf(id)
 {
             if(!confirm("Sure you want to toggle it ?")) return;
-             fetch("https://www.bestautomation.me/workflow/?action=togglewf&key=" + id)
+             fetch("?dest=web&action=togglewf&key=" + id)
                               .then((response) => {
                       return response.text();
                     })
@@ -105,13 +105,13 @@ async function changepassword()
 
 async function create()
 {
-    var name = document.getElementById("name").value;
-    var url = document.getElementById("url").value;
-    var sendm = document.getElementById("sendm").value;
-    var startm = document.getElementById("startm").value;
+    var name = document.getElementById("name").value; // WF NAME
+    var url = document.getElementById("url").value; // URL
+    var sendm = document.getElementById("sendm").value; // SEND EMAIL
+    var startm = document.getElementById("startm").value;  // START AUTO
 
-    var dyndiv = document.getElementById("dyndiv").value;
-    var time= document.getElementById("meeting-time").value;
+    var every = document.getElementById("every").value; // launch every
+    var time= document.getElementById("meeting-time").value; // start date
 
     if(name == "" || url == "" || sendm == "" || startm == "" || (startm == "1" && dyndiv == "")) return;
 
@@ -121,9 +121,12 @@ async function create()
     var id = await rep.text();
     if(id.startsWith("OK")) {
             id = id.substring(2);
-            window.location.replace("?dest=web&action=studio&url=" + url+ "&id=" + id);
+            window.location.replace("?dest=web&action=studio&url=" + url+ "&id=" + id + "&name=" + name + "&sendemail=" + sendm + "&selectlaunch=" + startm + "&every=" + every + "&meeting-time=" + time);
+
+           // var array_out = [urlParams.get('name'),urlParams.get('selectlaunch'),urlParams.get('every'),urlParams.get('meeting-time'),wf,urlParams.get('sendemail')];
+                
     }
-    else alert("We encountered a problem on the server, sorry for that!");return;
+    else alert("We encountered a problem on the server, sorry for that!");
 
 
 

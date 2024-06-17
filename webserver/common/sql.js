@@ -1,39 +1,42 @@
 //const mariadb = require('mariadb');
-const fetch = require('node-fetch');
+const XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest
 
 
 exports.query= async function (q)
 {
 
-    console.log("rquest is " + q )
-const response = await fetch("https://www.bestautomation.me/workflow/proxysql.php?r=" + q);
-var data = await response.text();
-console.log("response is " + data )
-if(data == "null") return [];
-if(data == "true") return "true";
-if(data == "false") return "false";
+  
+    let myPromise = new Promise( function( resolve, reject ) {
+	
+		let xhr = new XMLHttpRequest()
+		
+		xhr.open( 'GET',  "https://www.bestautomation.me/workflow/proxysql.php?r=" + q )
+		
+		xhr.onload = function() {
+			
+			if ( xhr.status == 200 ) {
+				
+				resolve( xhr.responseText )
+				
+			} else {
+				
+				reject( `Error: ${xhr.status}` )
+				
+			}
+		}
+		
+		xhr.send()
+		
+	} )
 
-
-return JSON.parse(data);
-
-    /*
-const con = mariadb.createPool({ nouveau commentaire
-    host: "109.234.164.193",
-    user: "opmp8948_sql",
-    password: "SQLopmp89484212..",
-    database: "opmp8948_wf"
-})
-
-
-await con.getConnection();
-
-console.log("we are connected")
-
-var result = await con.query(q);
-
-console.log("get result "+ result);
-
-return result;*/
+            var data = await myPromise
+            if(data == "null") return [];
+            if(data == "true") return "true";
+            if(data == "false") return "false";
+			if(JSON.parse(data).length == 1) return JSON.parse(data)[0];
+            return JSON.parse(data);
+        
+   
 
 }
 

@@ -8,22 +8,22 @@ const sessions = require('express-session');
 const oneDay = 1000 * 60 * 60 * 24;
 app.use(sessions({
 secret: "wwasecretkey",
-saveUninitialized:true,
-cookie: { maxAge: oneDay },
-resave: false
+saveUninitialized:false,
+resave : false,
+cookie: { maxAge: oneDay }
 }));
 
 app.listen(8000);
 
-
 app.get('/*', function (req, res) 
 { 
-
 	console.log("New request : " + JSON.stringify(req.query));
+
 	if(req.query.dest == "web")
 	{
 	  // dispatch to web
 	  web.dispatch(req,res);
+	  return;
 	
 	}
 	
@@ -31,6 +31,10 @@ app.get('/*', function (req, res)
 	{
 	  // dispatch to emulator
 	  emulator.dispatch(req,res);
+	  return;
 	  
 	}
+
+	res.end();
+	
 });

@@ -14,7 +14,7 @@
             <option value="0">No</option>
           </select><span style="color:red">*</span><br><br>
           <div id="dyndiv" style="visibility:hidden">
-            <select name="every">
+            <select name="every" id="every">
             <option value="">Start every</option>
             <option value="1">minute</option>
             <option value="60">hour</option>

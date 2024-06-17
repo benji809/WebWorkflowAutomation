@@ -1,22 +1,24 @@
 var {query} = require('../common/sql.js');
-var {islogguedin} = require('../common/utils.js');
 const {generaterandomid} = require('../common/utils.js');
 
 
-exports.createwf = function (req)  // TBD
+exports.activate = async function (req)
 {
+    var key = req.query.key;
+    if(key == "") return;
+    var result = await query("UPDATE `users` SET `activation`='' WHERE activation = '" + key + "'");
+    if(result) return "Your account is now active, you can log in."; // SEND EMAIL
+    else return "This id could be recognised. Please try again or contact us.";
+}
 
-	if(!islogguedin(req)) return "NC";
-
-    var data = JSON.parse(req.query.data);
-
-    data = cleandata(data);
-   
-    var result = query("INSERT INTO `workflows`(`wf`, `launcha`, `startdate`, `every`, `sendemail`, `name`, `creationdate`) VALUES ('" + data[4] + "'," + data[1] + "," + data[3] + "," + data[2] + "," + data[5] + ",'" + data[0] + "'," + time() + ")");
-    
+exports.dorecover = async function (req)
+{
+    var email = req.query.email;
+    if(email == "") return;
+    var recover= generateRandomid(64);
+    await query("UPDATE `users` SET `recover`='" + recover + "' WHERE `email` = '" + email + "'");
+    //SENDING EMAIL HERE !!
     return "OK";
-
-
 }
 
 exports.dologin = async function (req)
@@ -29,20 +31,15 @@ exports.dologin = async function (req)
     var result = await query("SELECT activation, id FROM users WHERE `email` = '" + email + "' AND `password` = '" + password + "'");
 
     if(result.length == 0) return "NOK";
-    
+
     if(result[0] != "") return "NA";
     
     req.session.isLoggedIn = true;
-    req.session.id = result[1];
+    req.session.userid = result[1]; 
     return "OK";
 }
 
-exports.dologout = function (req)
-{
-    req.session.isLoggedIn = false;
-    req.session.id = undefined;
-    return "OK";
-}
+
 
 
 exports.doregister = async function (req)
@@ -80,4 +77,14 @@ exports.doregister = async function (req)
 
 
 
+}
+
+exports.changepassword = async function (req)
+{
+    var key = req.query.key;
+    var password = req.query.password;
+    if(key== "" || password == "") return;
+    var result2 = await query("UPDATE `users` SET `recover`='',`password` = '" + password + "' WHERE `recover` = '" + key + "'");
+    if(result2) return "OK"; // sending email HERE
+    else return "NOK";
 }

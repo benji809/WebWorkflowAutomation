@@ -1,22 +1,39 @@
 const baseurl = "?dest=emulator&id=" + id + "&action=";
-var x,y,dy = 0;
+var x = 0,y = 0,dy = 0;
+
+
+function refreshsize()
+{
+    document.getElementById("img").width = window.innerWidth;
+    document.getElementById("img").height = window.innerHeight * 0.86;
+
+    document.getElementById("workflowdiv").style.width = window.innerWidth;
+    document.getElementById("workflowdiv").style.height = window.innerHeight * 0.2;
+
+}
 
 setInterval(function update(){
     if(x != 0 || y !=0)
     {
-    fetch(baseurl + "move&x=" + parseInt(x) + "&y=" + parseInt(y));
+    fetch(baseurl + "move&x=" + x + "&y=" + y);
     x = 0;
     y = 0;
     }
     if(dy != 0)
     {
-    fetch(baseurl + "scroll&dy=" + parseInt(dy));
+    fetch(baseurl + "scroll&dy=" + dy);
     dy = 0;   
     }
 
 },500);
 
-   
+function refresh(data)
+{
+
+    var divimage = document.getElementById("img")
+    divimage.src = 'data:image/png;base64,' + data;
+
+}
 
 function stream(urlvideo)
 {
@@ -63,8 +80,7 @@ fetch(urlvideo)
                      if(chunkString.startsWith("BEG##") && chunkString.endsWith("END##")) 
                      {
                         data = chunkString.substring(5,chunkString.length-5);
-                        var image = document.getElementById("img")
-                        image.src = 'data:image/jpeg;base64,' + data;
+                        refresh(data);
                      }
                      
                      if(chunkString.startsWith("BEG##") && !chunkString.endsWith("END##"))
@@ -75,8 +91,7 @@ fetch(urlvideo)
                      if(!chunkString.startsWith("BEG##") && chunkString.endsWith("END##"))
                      {
                         data += chunkString.substring(0,chunkString.length-5);
-                        var image = document.getElementById("img")
-                    image.src = 'data:image/png;base64,' + data;
+                        refresh(data);
                      }
                      
                      if(!chunkString.startsWith("BEG##") && !chunkString.endsWith("END##"))

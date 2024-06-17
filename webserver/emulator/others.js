@@ -98,11 +98,11 @@ exports.getvideo = async function (s,res)
     	 	var screenshot= await s.page.screenshot({ encoding: "base64" , quality: 20, type: 'jpeg'});
 
     	 	
-    	 	if(s.screenshot != screenshot)
-    	 	{
+    	 	//if(s.screenshot != screenshot)
+    	 	//{
     	 		res.write("BEG##" + screenshot + "END##");
-    	 		s.screenshot = screenshot
-    	 	}
+    	 		//s.screenshot = screenshot
+    	 	//}
     	 	if(s.messagetosend.length != 0)
     	 	{
     	 		res.write("MES##" + JSON.stringify(s.messagetosend));

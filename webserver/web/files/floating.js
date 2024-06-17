@@ -3,11 +3,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const urlParams = new URLSearchParams(window.location.search);
     stream("?dest=emulator&action=getvideo&id=" + id);
     updateworkflow("Browsing to " + url,url);
-
+    refreshsize();
 
 document.getElementById("img").addEventListener("mousemove", (e) => {
-    x = e.pageX - e.currentTarget.offsetLeft;
-    y = e.pageY - e.currentTarget.offsetTop;
+    x = (e.pageX - e.currentTarget.offsetLeft)/e.currentTarget.offsetWidth; 
+    y = (e.pageY - e.currentTarget.offsetTop)/e.currentTarget.offsetHeight;
     
 });
 
@@ -26,7 +26,7 @@ document.getElementById("img").addEventListener("keypress", (e) => {
 
 document.getElementById("img").addEventListener("DOMMouseScroll", (event) => {
 
- dy += event.detail;
+ dy += (event.detail/event.currentTarget.offsetWidth);
  
 });
 
@@ -57,7 +57,7 @@ function savew()
 				console.log(JSON.stringify(array_out));
 				
 
-                fetch("https://www.bestautomation.me/workflow/?action=docreate&data=" + JSON.stringify(array_out))
+                fetch("?dest=web&action=docreatewf&data=" + JSON.stringify(array_out))
                     .then((response) => {
                       return response.text();
                     })
@@ -70,7 +70,7 @@ function savew()
                       else if(data == "OK")
                       {
                           alert("Workflow saved!");
-                          document.location = "?action=getwf";
+                          document.location = "?dest=web&action=getwf";
                           
                           
                       }
@@ -107,7 +107,7 @@ function resetw()
 
 function cancelw()
 {
-	window.location.href = "https://www.bestautomation.me/workflow/";
+	window.location.href = "?dest=web&action=getwf";
     
 }
 
