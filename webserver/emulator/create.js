@@ -1,7 +1,7 @@
 const {generaterandomid} = require('../common/utils.js');
 const {session,sessions} = require('./data.js');
 const puppeteer = require("puppeteer");
-const del = require('./data.js');
+const {killsession} = require('./utils.js')
 
 async function createsession(req,res)
 {
@@ -9,7 +9,7 @@ async function createsession(req,res)
 try{
 if(req.query.url == "") return;
 
-var browser = await puppeteer.launch()//{headless: false});
+var browser = await puppeteer.launch(/*{ headless: false }*/);
 var page = await browser.newPage(); 
 await page.goto(req.query.url);
 await page.setViewport({ width: 1920, height: 1080});
@@ -19,13 +19,6 @@ var s = generaterandomid(64);
      await page.exposeFunction('processClick', (data) => {
       sessions.get(s).messagetosend.push("##CO" + data);
     });
-
-
-    await page.exposeFunction('processChange', (data1,data2,del) => {
-      sessions.get(s).messagetosend.push("##IV" + data1 + del + data2);
-    });
-
-
 
    await page.evaluate(() => {
       
@@ -74,27 +67,19 @@ var getNodeTreeXPath = function(node) {
         (event) => { window.processClick(getNodeXPath(event.target)); }, // Here you can send the data to Node.js context.
       );
       
-         document.addEventListener(
-        'change',
-        (event) => { window.processChange(getNodeXPath(event.target),event.target.value); }, // Here you can send the data to Node.js context.
-      );
-      
-      
+  
       
       
     });
     
     
-    var timer = setTimeout(() => {
-  console.log("Session autokilled : " + s);
-  sessions.delete(s);
-	}, "60000");
 
-
+    var t = setTimeout(killsession, "60000",s);
+ 
 
     
     
-    sessions.set(s,new session("",browser,page,"",[],timer));
+    sessions.set(s,new session("",browser,page,"",[],t));
     res.writeHead(200, {
             'Content-Type': 'text/html; charset=utf-8',
             'Cache-Control': 'no-cache',
@@ -115,6 +100,8 @@ var getNodeTreeXPath = function(node) {
     }
     
 }
+
+
 
 module.exports = {createsession}
  

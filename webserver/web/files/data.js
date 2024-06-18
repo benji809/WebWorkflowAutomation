@@ -2,6 +2,8 @@ var recording = true;
 
 var recordobject = false;
 
+var screenshot = false;
+
 var mode;
 
 var counttoshow = 0;

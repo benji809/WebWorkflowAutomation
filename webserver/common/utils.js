@@ -36,7 +36,7 @@ for(var i=0;i<6;i++)
    
 }
 if(data[1] == 1) data[1] = 2; // will pause otherwised
-data[3] = Date.parse(data[3]);
-
+var date = new Date(data[3]);
+data[3] = date.toISOString().slice(0,19).replace('T',' ') + ".000000"
 return data;
 }

@@ -5,7 +5,7 @@ exports.docreatewf = async function (req)
 {
     var data = JSON.parse(req.query.data);
     data = cleandata(data);
-    var result = await query("INSERT INTO `workflows`(`wf`, `launcha`, `startdate`, `every`, `sendemail`, `name`, `creationdate`,`userid`) VALUES ('" + data[4] + "'," + data[1] + "," + data[3] + "," + data[2] + "," + data[5] + ",'" + data[0] + "'," + Date.now() + "," + getid(req) + ")");
+    var result = await query("INSERT INTO `workflows`(`wf`, `launcha`, `startdate`, `every`, `sendemail`, `name`,`userid`) VALUES ('" + data[4] + "'," + data[1] + ",'" + data[3] + "'," + data[2] + "," + data[5] + ",'" + data[0] + "'," + getid(req) + ")");
 
     if(result) return "OK";
     else return "NOK";
@@ -34,10 +34,10 @@ exports.togglewf = async function (req)
     var row = await query("SELECT * FROM `workflows` WHERE id =" + key + " AND `userid` =" + getid(req));
     if(row.length == 0) return "NOK";
     var result = false;
-    if(row[2] == 2) result = await query("UPDATE `workflows` SET `launcha`= 1 WHERE `id` = " + key);
-    else if(row[2] == 1) result = await query("UPDATE `workflows` SET `launcha`= 2 WHERE `id` = " + key);
-    else if(row[5] == 0) result = await query("UPDATE `workflows` SET `startm`= 1 WHERE `id` = " + key);
-    else if(row[5] == 1) result = await query("UPDATE `workflows` SET `startm`= 0 WHERE `id` = " + key);
+    if(row[0][2] == 2) result = await query("UPDATE `workflows` SET `launcha`= 1 WHERE `id` = " + key);
+    else if(row[0][2] == 1) result = await query("UPDATE `workflows` SET `launcha`= 2 WHERE `id` = " + key);
+    else if(row[0][5] == 0) result = await query("UPDATE `workflows` SET `startm`= 1 WHERE `id` = " + key);
+    else if(row[0][5] == 1) result = await query("UPDATE `workflows` SET `startm`= 0 WHERE `id` = " + key);
     if(result) return "OK";
     else return "NOK";
 }

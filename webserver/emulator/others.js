@@ -35,8 +35,10 @@ exports.move = async function (s,x,y)
 exports.keyboard = async function (s,key)
 {
    try{
-   
-   await s.page.keyboard.press(String.fromCharCode(key));
+
+   for(var i=0;i<10;i++) if(key == "Numpad" + i) key = i.toString();   
+
+   await s.page.keyboard.press(key);
 
    }
    catch(e)
@@ -53,13 +55,13 @@ exports.screenshot = async function (s,x,y,w,h)
   try{
    
    var screenshot= await s.page.screenshot({ encoding: "base64" , quality: 20, type: 'jpeg', clip: {
-      x: x,
-      y: y,
-      width: w,
-      height: h
+      x: parseInt(x),
+      y: parseInt(y),
+      width: parseInt(w),
+      height: parseInt(h)
     }});
 
-   s.messagetosend.push("##SC" + screenshot);
+   s.messagetosend.push("SC##" + screenshot);
 
    }
    catch(e)
@@ -95,19 +97,24 @@ exports.getvideo = async function (s,res)
 		});
     	 	setInterval(async function sc()
     	 	{
-    	 	var screenshot= await s.page.screenshot({ encoding: "base64" , quality: 20, type: 'jpeg'});
+         try{
+            
+            var screenshot= await s.page.screenshot({ encoding: "base64" , quality: 20, type: 'jpeg'});
 
-    	 	
-    	 	//if(s.screenshot != screenshot)
-    	 	//{
+
     	 		res.write("BEG##" + screenshot + "END##");
-    	 		//s.screenshot = screenshot
-    	 	//}
+
     	 	if(s.messagetosend.length != 0)
     	 	{
     	 		res.write("MES##" + JSON.stringify(s.messagetosend));
     	 		s.messagetosend = [];
     	 	}
+         }
+         catch (e)
+         {
+
+            clearTimeout(this);
+         }
     	 	
     	 	},1000);
 

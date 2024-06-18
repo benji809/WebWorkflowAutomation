@@ -20,31 +20,46 @@ function updateworkflow(el1,el2)
 
 function listenMessage(msg) {
     
-    console.log("recording " + msg);
+    console.log(msg);
     
     try{
     if(msg.includes("##") && recording)
     {
         
-                if(msg.startsWith("##CO")) 
+                if(msg.startsWith("##CO")) // click on element
                 {
-                    var el = msg.substring(4);
+          
+
+
                     if(recordobject === false)
                     {
                         
-                        updateworkflow("Click on " + el,"CO" + el);
+                        var el = msg.substring(4);
+                        var select = document.getElementById('workflowts').options;
+                        for(var i=0;i<select.length;i++)
+                            {
+                            if(select[i].innerText == "##CO<>")
+                                {
+                                  select[i].innerText = "##CO" + el;
+                                  document.getElementById('workflow').options[i].innerText = "Click on " + el;
+                                  return;
+                                }
+                                
+                            }
                     }
                     else
                     {
                         document.getElementById('ets').innerHTML = el;
                     }
                 }
-                if(msg.startsWith("##IV"))
+             
+                if(msg.startsWith("SC##")) // screenshot
                 {
-                    var el = msg.split(del)[1];
-                    var val = msg.split(del)[2];
-                    updateworkflow("Input value " + val + " on "+  el,"IV" + del + el + del + val);    
+                var data = msg.substring(4);
+                var sc= document.getElementById("screenshot")
+                sc.src = 'data:image/png;base64,' + data;
                 }
+                
                 
 
         
@@ -63,24 +78,7 @@ function listenMessage(msg) {
     
 }
 
-window.addEventListener("message", listenMessage, false);
 
-navigator.serviceWorker.addEventListener('message', function handler (event) {
-
-      if(event.data.startsWith(">>ST1"))
-    {
-        var outm;
-        dd += parseInt(event.data.substring(5));
-        if(dd < 1024) outm = dd + " o";
-        if(dd > 1024 && dd < 1024*1024) outm = parseInt(dd/2014) + " ko";
-        if(dd > 1024*1024) outm = parseInt(dd/(1024*1024)) + " Mo";
-        document.getElementById("dd").innerHTML = "Data downloaded for this session : ~" + outm;
-        
-        nbfiles++;
-        document.getElementById("nbfd").innerHTML = "NB files downloaded for this session : " + nbfiles;
-
-    }
-});
 
 
 

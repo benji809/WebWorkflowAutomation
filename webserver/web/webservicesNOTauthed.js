@@ -32,10 +32,10 @@ exports.dologin = async function (req)
 
     if(result.length == 0) return "NOK";
 
-    if(result[0] != "") return "NA";
+    if(result[0][0] != "") return "NA";
     
     req.session.isLoggedIn = true;
-    req.session.userid = result[1]; 
+    req.session.userid = result[0][1]; 
     return "OK";
 }
 

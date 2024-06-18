@@ -1,17 +1,17 @@
 <div text-align="center">
             <p>Create a new workflow</p>
         <form action="javascript:create()">
-         <input  placeholder="My Workflow" required type="text" id="name" name="name"><span style="color:red">*</span><br><br>
-         <input  placeholder="https://www.google.com" required name="url" id="url" type="url"><span style="color:red">*</span><br><br>
+         <input  placeholder="My Workflow" value="def" required type="text" id="name" name="name"><span style="color:red">*</span><br><br>
+         <input  placeholder="https://www.google.com" value="https://www.facebook.com"required name="url" id="url" type="url"><span style="color:red">*</span><br><br>
           <select required name="sendm" id="sendm">
             <option value="">Send the result via e-mail</option>
-            <option value="1">Yes</option>
+            <option  selected="selected" value="1">Yes</option>
             <option value="0">No</option>
             </select><span style="color:red">*</span><br><br>
          <select required onchange="showhide()" name="startm" id="startm">
             <option value="">Start automatically</option>
-            <option value="1">Yes</option>
-            <option value="0">No</option>
+            <option   value="1">Yes</option>
+            <option selected="selected" value="0">No</option>
           </select><span style="color:red">*</span><br><br>
           <div id="dyndiv" style="visibility:hidden">
             <select name="every" id="every">

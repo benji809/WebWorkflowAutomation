@@ -1,26 +1,55 @@
 document.addEventListener("DOMContentLoaded", () => {
-    document.getElementById("sif").innerHTML = createselect("selectif","refreshif",["Add condition","If element","If attribute","If page"]);
+    document.getElementById("sif").innerHTML = createselect("selectif","refreshif",["Add condition","If element","If attribute","If page","If screenshot"]);
     const urlParams = new URLSearchParams(window.location.search);
     stream("?dest=emulator&action=getvideo&id=" + id);
     updateworkflow("Browsing to " + url,url);
     refreshsize();
+    animateimg();
 
 document.getElementById("img").addEventListener("mousemove", (e) => {
+    if(screenshot) return;
     x = (e.pageX - e.currentTarget.offsetLeft)/e.currentTarget.offsetWidth; 
     y = (e.pageY - e.currentTarget.offsetTop)/e.currentTarget.offsetHeight;
+    oldx = x;
+    oldy = y;
     
 });
 
 document.getElementById("img").addEventListener("mousedown", (e) => {
+    if(screenshot) return;
     fetch(baseurl + "mousedown");
+
+    if(recordobject === false)
+        {
+            
+            updateworkflow("Click on <>","##CO<>");
+        }
+
 });
 
 document.getElementById("img").addEventListener("mouseup", (e) => {
+    if(screenshot) return;
     fetch(baseurl + "mouseup");
 });
 
-document.getElementById("img").addEventListener("keypress", (e) => {
-    fetch(baseurl + "keyboard&key=" + e.keyCode);
+document.addEventListener("keydown", (e) => {
+
+if(oldx > 0.05 && oldy > 0.05) 
+    {
+    fetch(baseurl + "keyboard&key=" + e.code);
+    if(recordobject === false)
+        {
+            var o1 = document.getElementById('workflowts').options;
+            var o2 = document.getElementById('workflow').options;
+            if(o1[o1.length-1].innerText.includes("##IV")) {o1[o1.length-1].innerText += e.code + ";";o2[o2.length-1].innerText += e.key;}
+            else updateworkflow("Enter : " + e.key,"##IV" + e.code);
+            
+        }
+
+
+
+    }
+    
 });
 
 
@@ -65,7 +94,7 @@ function savew()
                       console.log(data);
                       if(data == "NC")
                       {
-                          alert("You are not loggued-in, your workflow will not be saved");
+                          alert("You are not loggued-in, your workflow could not be saved");
                       }
                       else if(data == "OK")
                       {
@@ -103,6 +132,8 @@ function resetw()
                 document.getElementById("selectif").options[0].selected = true;
                 refreshif();
                 recordobject = false;
+                screenshot = false;
+                document.getElementById('rect').style.display = "none";
 }
 
 function cancelw()
@@ -183,6 +214,15 @@ function check(mode)
             return false;
         }
     }
+
+    if(mode == 4)
+    {
+        if(!checkselect("selectif2") || !checkselect("selectif3") || document.getElementById("screenshot").src == "?dest=web&action=getfile&file=question.jpg")
+        {
+            alert("Please complete all fields");
+            return false;
+        }
+    }
     
     return true;
 }
@@ -231,10 +271,23 @@ function add(){
             txt2 += del + document.getElementById("value").value  + del + document.getElementById("selectif3").selectedIndex;
         
     }
+
+    if(select == 4) 
+     {
+            if(!check(4)) return;
+            txt += "Screenshot "+  document.getElementById("selectif2").options[document.getElementById("selectif2").selectedIndex].innerText + " Then " +  document.getElementById("selectif3").options[document.getElementById("selectif3").selectedIndex].innerText;
+            if(document.getElementById("selectif2").selectedIndex == 1) txt2 = "SCE";
+            if(document.getElementById("selectif2").selectedIndex == 2) txt2 = "SCNE";
+            var el = document.getElementById("screenshot");
+            txt2 += del + el.xdef + del + el.ydef + del +  el.wdef + del + el.hdef + del + el.src.substring(22);
+     }
+
     recordobject = false;
+    screenshot = false;
     updateworkflow(txt,txt2);
     document.getElementById("selectif").options[0].selected = true;
     refreshif();
+    document.getElementById('rect').style.display = "none";
     
 }
 
@@ -265,6 +318,13 @@ function refreshif()
                 
                  data = createselect("selectif2",null,["Choose option","contains","not contains"]) + createinput("value") + '<br>Then ' + createselect("selectif3",null,["Choose option","OK","NOK"]) + "<br><br>";
             }
+
+            if(select == 4) // screenshot
+            {
+                screenshot = true;  
+                data = '<p>If screenshot </p><img id="screenshot" src="?dest=web&action=getfile&file=question.jpg" width="50" height="50">' + createselect("selectif2",null,["Choose option","is the same","is different"]) + '<br>Then ' + createselect("selectif3",null,["Choose option","OK","NOK"]) + "<br><br>";
+            }
+
             data += '<button onclick="add()">Add</button>';
             }
             document.getElementById("dynif").innerHTML = data;

@@ -1,6 +1,7 @@
 const baseurl = "?dest=emulator&id=" + id + "&action=";
 var x = 0,y = 0,dy = 0;
-
+var oldx = 0;
+var oldy = 0;
 
 function refreshsize()
 {
@@ -68,14 +69,13 @@ fetch(urlvideo)
                      //console.log(chunkString);
                     
                     
-                     if(chunkString.includes("MES##")) // nettoyage
+                     if(chunkString.includes("MES##")) // nettoyage message
                      {
                      var message = chunkString.substring(chunkString.indexOf("MES##")+5);
-                     console.log(message);
                      var infos = JSON.parse(message);
                      infos.map((x) => listenMessage(x));
                      }
-                     
+
                     
                      if(chunkString.startsWith("BEG##") && chunkString.endsWith("END##")) 
                      {

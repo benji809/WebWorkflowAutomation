@@ -31,15 +31,8 @@ function displaystartstoppause(r,s)
 
 function displaydate(d)
 {
-    var a = new Date(d * 1000);
-    var year = a.getYear();
-    var month = a.getMonth();
-    var date = a.getDate();
-    var hour = a.getHours();
-    var min = a.getMinutes();
-    var time = month + ' ' + year + ' ' + hour + ':' + min;
-    return time;
-    
+    var a = new Date(d).toString();
+    return a.substring(0,21);
 }
 
 
@@ -70,7 +63,7 @@ exports.getwf = async function (req)
     
     
     
-    out+=  '<tr><td></td><td  style="border-bottom: solid;"><b>Type</b></td><td style="width:400px;border-bottom: solid;"><b>Start/Stop</b></td><td  style="width:350px;border-bottom: solid;"><b>Name</b></td><td  style="width:400px;border-bottom: solid;"><b>Creation</b></td><td  style="border-bottom: solid;"><b>Executed</b></td><td  style="width:300px;border-bottom: solid;"><b>Last execution</b></td><td  style="border-bottom: solid;"><b>Action</b></td></tr>';
+    out+=  '<tr><td></td><td  style="border-bottom: solid;"><b>Type</b></td><td style="width:400px;border-bottom: solid;"><b>Start/Stop</b></td><td  style="width:350px;border-bottom: solid;"><b>Name</b></td><td  style="width:700px;border-bottom: solid;"><b>Creation</b></td><td  style="border-bottom: solid;"><b>Executed</b></td><td  style="width:300px;border-bottom: solid;"><b>Last execution</b></td><td  style="border-bottom: solid;"><b>Action</b></td></tr>';
       
     for(var i=0;i<result.length;i++)
         {

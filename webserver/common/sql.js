@@ -33,7 +33,6 @@ exports.query= async function (q)
             if(data == "null") return [];
             if(data == "true") return "true";
             if(data == "false") return "false";
-			if(JSON.parse(data).length == 1) return JSON.parse(data)[0];
             return JSON.parse(data);
         
    

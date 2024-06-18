@@ -1,13 +1,16 @@
 <!DOCTYPE html>
 
+<link rel="stylesheet" href="?dest=web&action=getfile&file=style2.css">
+
 <head>
     <script src="?dest=web&action=getfile&file=data.js"></script>
         <script src="?dest=web&action=getfile&file=eventhandler.js"></script>
             <script src="?dest=web&action=getfile&file=main.js"></script>
       <script src="?dest=web&action=getfile&file=floating.js"></script>
+      <script src="?dest=web&action=getfile&file=divimg.js"></script>
 
   
-<title>Studio</title>
+<title>Studio here !</title>
 
 </head>
 
@@ -32,22 +35,13 @@
           
           
       </div>
-      <div style="width:33%;text-align:center;">
-      <p>Some stats here</p>
-      <p id="curl">Current URL :</p>
-      <p id="nbfd">NB files downloaded:</p>
-      <p id="dd">Data downloaded:</p>
-      </div>
-      
 
  </div>
- 
 
-  <img id="img">
-
-
-
-  
+  <div style="cursor: pointer;" id="divimg">
+  <img draggable="false" id="img"/>
+   </div>
+   <div id="rect" style="border: solid 2px rgb(60, 255, 0);pointer-events: none;display: none;"></div>
 </body>
  
 </html>
