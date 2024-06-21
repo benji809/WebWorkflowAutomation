@@ -1,4 +1,4 @@
-const {sessions} = require('./data.js');
+const {sessions} = require('../common/data.js');
 
 
 exports.killsession = async function (s)

@@ -1,13 +1,34 @@
-const {generaterandomid} = require('../common/utils.js');
-const {session,sessions} = require('./data.js');
+const {generaterandomid,islogguedin} = require('../common/utils.js');
+const {session,sessions} = require('../common/data.js');
 const puppeteer = require("puppeteer");
 const {killsession} = require('./utils.js')
+var {userhasreachedmaxwf,getcurrentoffer} = require('../common/subscriptions.js');
+
 
 async function createsession(req,res)
 {
 
 try{
 if(req.query.url == "") return;
+
+if(islogguedin(req))
+{
+
+    if(await userhasreachedmaxwf(req)) {res.write("MR");return;}
+    if(getcurrentoffer(req).sendemail == 0 && req.query.sendm == "1") {res.write("SENDMNA");return;}
+    if(getcurrentoffer(req).workflowautomatedallowed == 0 && req.query.startm == "1") {res.write("STARTMNA");return;}
+    if(getcurrentoffer(req).everymin > parseInt(req.query.every)) {res.write("STARTEVERYNA");return;}
+}
+
+if(!islogguedin(req))
+{
+
+    if(req.query.sendm == "1")  {res.write("SENDMNA");return;}
+    if(req.query.startm == "1")  {res.write("STARTMNA");return;}
+
+}
+
+
 
 var browser = await puppeteer.launch(/*{ headless: false }*/);
 var page = await browser.newPage(); 
@@ -74,7 +95,7 @@ var getNodeTreeXPath = function(node) {
     
     
 
-    var t = setTimeout(killsession, "60000",s);
+    var t = setTimeout(killsession, getcurrentoffer(req).timeout*1000,s);
  
 
     

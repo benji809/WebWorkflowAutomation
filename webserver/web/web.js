@@ -64,12 +64,14 @@ if(req.query.action == "recover2") 	out += getfilecontent("recover2").replace("#
 if(req.query.action == "create") 	out += getfilecontent("create");
 
 // HERE NEED TO BE AUTHED
-	
+
 	if(req.query.action == "getwf") 
-	{
+		{
 		if(islogguedin(req)) out += await getwf(req);
 		else out+= getfilecontent("login");
-	}
+		}
+	
+
 	
 out += getfilecontent("footer");
 

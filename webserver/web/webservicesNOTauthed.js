@@ -36,6 +36,13 @@ exports.dologin = async function (req)
     
     req.session.isLoggedIn = true;
     req.session.userid = result[0][1]; 
+
+    // go fetch the offerid of the user. TO UPDATE when sub changes..
+
+    var offerid = await query("SELECT offerid FROM sub WHERE userid = '" + req.session.userid + "'");
+    if(offerid.length == 0) req.session.offerid = 1;
+    else req.session.offerid = offerid[0][0];
+
     return "OK";
 }
 

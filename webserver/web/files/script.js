@@ -111,13 +111,14 @@ async function create()
     var startm = document.getElementById("startm").value;  // START AUTO
 
     var every = document.getElementById("every").value; // launch every
-    var time= document.getElementById("meeting-time").value; // start date
+    var time= document.getElementById("meeting-time").value;
+    //var date = new Date(time).toLocaleString("en-US", {timeZone: "(GMT +1:00) Brussels, Copenhagen, Madrid, Paris"})
 
     if(name == "" || url == "" || sendm == "" || startm == "" || (startm == "1" && dyndiv == "")) return;
 
     // starting studio session
 
-    var rep = await fetch("?dest=emulator&action=createsession&url=" + url);
+    var rep = await fetch("?dest=emulator&action=createsession&url=" + url + "&sendm=" + sendm + "&startm=" + startm + "&every=" + every);
     var id = await rep.text();
     if(id.startsWith("OK")) {
             id = id.substring(2);
@@ -126,7 +127,11 @@ async function create()
            // var array_out = [urlParams.get('name'),urlParams.get('selectlaunch'),urlParams.get('every'),urlParams.get('meeting-time'),wf,urlParams.get('sendemail')];
                 
     }
-    else alert("We encountered a problem on the server, sorry for that!");
+    else if(id == "MR") alert("You have reached the maximum of workflow created. Consider changing subscription!");
+    else if(id == "SENDMNA") alert("You cannot send mail in this mode");
+    else if(id == "STARTMNA") alert("You cannot start workflow automatically in this mode");
+    else if(id == "STARTEVERYNA") alert("You cannot choose this every in this mode");
+    else alert("Ohohhoh, we encountered a problem on the server, sorry for that!");
 
 
 

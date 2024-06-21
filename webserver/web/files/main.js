@@ -2,6 +2,7 @@ const baseurl = "?dest=emulator&id=" + id + "&action=";
 var x = 0,y = 0,dy = 0;
 var oldx = 0;
 var oldy = 0;
+var timeoutvideo;
 
 function refreshsize()
 {
@@ -33,6 +34,14 @@ function refresh(data)
 
     var divimage = document.getElementById("img")
     divimage.src = 'data:image/png;base64,' + data;
+    clearTimeout(timeoutvideo);
+    timeoutvideo = setTimeout(() => {
+        
+        alert("You have been disconnected from the server because of an inactivity or connection loss.");
+        window.location.href = "?dest=web&action=getwf";
+
+
+    }, 5000);
 
 }
 

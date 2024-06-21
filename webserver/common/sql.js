@@ -5,7 +5,7 @@ const XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest
 exports.query= async function (q)
 {
 
-  
+ 
     let myPromise = new Promise( function( resolve, reject ) {
 	
 		let xhr = new XMLHttpRequest()

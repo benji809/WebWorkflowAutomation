@@ -30,11 +30,11 @@ function listenMessage(msg) {
                 {
           
 
-
+                    var el = msg.substring(4);
                     if(recordobject === false)
                     {
                         
-                        var el = msg.substring(4);
+                        
                         var select = document.getElementById('workflowts').options;
                         for(var i=0;i<select.length;i++)
                             {

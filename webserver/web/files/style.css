@@ -35,7 +35,7 @@ input[type=button],input[type=submit] {
 
 input[type=text], input[type=url], input[type=datetime-local], select, input[type=password], input[type=email] {
     
-    width:330px;
+    width:400px;
     
 }
 
@@ -235,4 +235,25 @@ input[type="submit"] {
   .wrap-all-the-things {
     padding-left: 70px;
   }
+}
+
+
+
+.tooltiptext {
+  visibility: hidden;
+
+  background-color: grey;
+  color: black;
+  text-align: center;
+  padding: 5px 0;
+  border-radius: 6px;
+ 
+  /* Position the tooltip text - see examples below! */
+  position: absolute;
+  z-index: 1;
+}
+
+/* Show the tooltip text when you mouse over the tooltip container */
+.tooltip:hover .tooltiptext {
+  visibility: visible;
 }

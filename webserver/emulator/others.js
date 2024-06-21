@@ -1,3 +1,5 @@
+var {getcurrentoffer} = require('../common/subscriptions.js');
+
 exports.mousedown = async function (s)
 {
    try{
@@ -50,11 +52,11 @@ exports.keyboard = async function (s,key)
 }
 
 
-exports.screenshot = async function (s,x,y,w,h)
+exports.screenshot = async function (s,x,y,w,h,req)
 {
   try{
    
-   var screenshot= await s.page.screenshot({ encoding: "base64" , quality: 20, type: 'jpeg', clip: {
+   var screenshot= await s.page.screenshot({ encoding: "base64" , quality: getcurrentoffer(req).imagequality_value, type: 'jpeg', clip: {
       x: parseInt(x),
       y: parseInt(y),
       width: parseInt(w),
@@ -86,9 +88,26 @@ exports.scroll = async function (s,dy)
 }
 
 
-exports.getvideo = async function (s,res)
+exports.sif = function(req,res)
+{
+   var options = ["Add condition","If element","If page","If attribute","If screenshot"];
+   var data = '<select onChange="refreshif()" id="selectif">';
+    
+   for(var i= 0;i<options.length;i++) 
+   {
+      var disabled = "";
+      if(options[i] == "If screenshot" && getcurrentoffer(req).screenshotallowed == 0) disabled = "disabled";
+      if(options[i] == "If attribute" && getcurrentoffer(req).attributeallowed == 0) disabled = "disabled";
+      data += "<option " + disabled + " value = '" + i + "'>" + options[i] + "</option>";
+   }
+    data += "</select>";
+    res.write(data);
+}
+
+exports.getvideo = async function (s,res,req)
 {
 	
+      var quality = getcurrentoffer(req).imagequality_value;
 		
 		res.writeHead(400, {
 		    'Content-Type': 'text/event-stream',
@@ -98,10 +117,7 @@ exports.getvideo = async function (s,res)
     	 	setInterval(async function sc()
     	 	{
          try{
-            
-            var screenshot= await s.page.screenshot({ encoding: "base64" , quality: 20, type: 'jpeg'});
-
-
+            var screenshot= await s.page.screenshot({ encoding: "base64" , quality: quality, type: 'jpeg'});
     	 		res.write("BEG##" + screenshot + "END##");
 
     	 	if(s.messagetosend.length != 0)

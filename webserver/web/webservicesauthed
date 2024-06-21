@@ -1,11 +1,18 @@
 var {cleandata,getid} = require('../common/utils.js');
 var {query} = require('../common/sql.js');
+var {userhasreachedmaxwf,getcurrentoffer} = require('../common/subscriptions.js')
 
 exports.docreatewf = async function (req) 
 {
+    if(await userhasreachedmaxwf(req)) return "NOK";
     var data = JSON.parse(req.query.data);
     data = cleandata(data);
-    var result = await query("INSERT INTO `workflows`(`wf`, `launcha`, `startdate`, `every`, `sendemail`, `name`,`userid`) VALUES ('" + data[4] + "'," + data[1] + ",'" + data[3] + "'," + data[2] + "," + data[5] + ",'" + data[0] + "'," + getid(req) + ")");
+
+    // check if user has not tampered with data // to be reviwed because it can interfers with other actions...
+    if(getcurrentoffer(req).screenshotallowed == 0 && (data[4].toString().includes("SCE") || data[4].toString().includes("SCNE"))) return "NOK";
+    if(getcurrentoffer(req).attributeallowed == 0 && (data[4].toString().includes("EVE") || data[4].toString().includes("EVNE") || data[4].toString().includes("EVI") || data[4].toString().includes("EVNI"))) return "NOK";
+
+    var result = await query("INSERT INTO `workflows`(`wf`, `launcha`, `startdate`, `every`, `sendemail`, `name`,`userid`,`wftxt`) VALUES ('" + data[4] + "'," + data[1] + ",'" + data[3] + "'," + data[2] + "," + data[5] + ",'" + data[0] + "'," + getid(req) + ",'" + data[6] + "')");
 
     if(result) return "OK";
     else return "NOK";
@@ -24,16 +31,19 @@ exports.deletewf = async function (req)
     if(key == "") return;
     var r1 = await query("DELETE FROM `workflows` WHERE `id` = " + key + " AND `userid` = " + getid(req));
     if(!r1) return "NOK";
-    await query("DELETE FROM `runs` WHERE `wfid` =`" + key + "`");
+    await query("DELETE FROM `runs` WHERE `wfid` =" + key);
     return "OK";
 }
 exports.togglewf = async function (req)
 {
     var key = req.query.key;
     if(key == "") return;
+    
     var row = await query("SELECT * FROM `workflows` WHERE id =" + key + " AND `userid` =" + getid(req));
+    
     if(row.length == 0) return "NOK";
     var result = false;
+
     if(row[0][2] == 2) result = await query("UPDATE `workflows` SET `launcha`= 1 WHERE `id` = " + key);
     else if(row[0][2] == 1) result = await query("UPDATE `workflows` SET `launcha`= 2 WHERE `id` = " + key);
     else if(row[0][5] == 0) result = await query("UPDATE `workflows` SET `startm`= 1 WHERE `id` = " + key);

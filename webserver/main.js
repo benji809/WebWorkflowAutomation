@@ -3,6 +3,7 @@ var app = express();
 var emulator = require('./emulator/emulator.js');
 var web = require('./web/web.js');
 const sessions = require('express-session');
+var {fetchoffers} = require('./common/subscriptions.js')
 
 
 const oneDay = 1000 * 60 * 60 * 24;
@@ -12,6 +13,8 @@ saveUninitialized:false,
 resave : false,
 cookie: { maxAge: oneDay }
 }));
+
+fetchoffers();
 
 app.listen(8000);
 

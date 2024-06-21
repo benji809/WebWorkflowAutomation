@@ -1,5 +1,20 @@
+async function loadsif()
+{
+    //var data = createselect("selectif","refreshif",["Add condition","If element","If attribute","If page","If screenshot"]);
+    var r = await fetch(baseurl + "sif");
+    var data = await r.text();
+    document.getElementById("sif").innerHTML = data;
+
+
+
+}
+
+
+
+
 document.addEventListener("DOMContentLoaded", () => {
-    document.getElementById("sif").innerHTML = createselect("selectif","refreshif",["Add condition","If element","If attribute","If page","If screenshot"]);
+    
+    loadsif();
     const urlParams = new URLSearchParams(window.location.search);
     stream("?dest=emulator&action=getvideo&id=" + id);
     updateworkflow("Browsing to " + url,url);
@@ -67,8 +82,11 @@ document.getElementById("img").addEventListener("DOMMouseScroll", (event) => {
 
 function savew()
 {
-				let select_item = document.getElementById("workflow");
+				let select_item = document.getElementById("workflowts");
                 let options = select_item.getElementsByTagName('option');
+
+                let select_itemtxt = document.getElementById("workflow");
+                let optionstxt = select_itemtxt.getElementsByTagName('option');
                 
                 if(options.length == 1) {alert("Your workflow is empty");return;}
             
@@ -81,7 +99,13 @@ function savew()
                 wf.push(encodeURIComponent(options[0].innerText));
                 for (var i=1; i < options.length ; i++)  wf.push(options[i].innerText);
 
-                var array_out = [urlParams.get('name'),urlParams.get('selectlaunch'),urlParams.get('every'),urlParams.get('meeting-time'),wf,urlParams.get('sendemail')];
+                var wftxt = [];
+                
+                wftxt.push(encodeURIComponent(optionstxt[0].innerText));
+                for (var i=1; i < optionstxt.length ; i++)  wftxt.push(optionstxt[i].innerText);
+                
+
+                var array_out = [urlParams.get('name'),urlParams.get('selectlaunch'),urlParams.get('every'),urlParams.get('meeting-time'),wf,urlParams.get('sendemail'),wftxt];
                 
 				console.log(JSON.stringify(array_out));
 				
@@ -136,8 +160,9 @@ function resetw()
                 document.getElementById('rect').style.display = "none";
 }
 
-function cancelw()
+async function cancelw()
 {
+    await fetch(baseurl + "kill");
 	window.location.href = "?dest=web&action=getwf";
     
 }
@@ -198,7 +223,7 @@ function check(mode)
         }
     }
     
-    if(mode == 2)
+    if(mode == 3)
     {
         if(!checkets() || !checkfield("attribute") ||!checkfield("value")  || !checkselect("selectif2") || !checkselect("selectif3"))
         {
@@ -206,7 +231,7 @@ function check(mode)
             return false;
         }
     }
-    if(mode == 3)
+    if(mode == 2)
     {
         if(!checkfield("value") || !checkselect("selectif2") || !checkselect("selectif3"))
         {
@@ -252,9 +277,9 @@ function add(){
             if(document.getElementById("selectif2").selectedIndex == 2) txt2 = "IEDE";
             txt2 += del + document.getElementById("ets").innerText + del + document.getElementById("selectif3").selectedIndex;
     }
-    if(select == 2) 
+    if(select == 3) 
     {
-            if(!check(2)) return;
+            if(!check(3)) return;
             txt += "attribute ["   + document.getElementById("attribute").value + "] of element [" +  document.getElementById("ets").innerText  + "] " +  document.getElementById("selectif2").options[document.getElementById("selectif2").selectedIndex].innerText  + " [" + document.getElementById("value").value + "] Then " +  document.getElementById("selectif3").options[document.getElementById("selectif3").selectedIndex].innerText;
             if(document.getElementById("selectif2").selectedIndex == 1) txt2 = "EVE";
             if(document.getElementById("selectif2").selectedIndex == 2) txt2 = "EVNE"; 
@@ -262,9 +287,9 @@ function add(){
             if(document.getElementById("selectif2").selectedIndex == 4) txt2 = "EVNI"; 
             txt2 += del + document.getElementById("ets").innerText  + del + document.getElementById("attribute").value + del + document.getElementById("value").value  + del + document.getElementById("selectif3").selectedIndex;
     }
-    if(select == 3) 
+    if(select == 2) 
     {
-            if(!check(3)) return;
+            if(!check(2)) return;
             txt += "Page "+  document.getElementById("selectif2").options[document.getElementById("selectif2").selectedIndex].innerText + " [" + document.getElementById("value").value + "] Then " +  document.getElementById("selectif3").options[document.getElementById("selectif3").selectedIndex].innerText;
             if(document.getElementById("selectif2").selectedIndex == 1) txt2 = "PC";
             if(document.getElementById("selectif2").selectedIndex == 2) txt2 = "PNC";
@@ -307,13 +332,13 @@ function refreshif()
              data = '<p id="ets">No element selected yet : click any element of the page below to select it</p>' + createselect("selectif2",null,["Choose option","exist","doesnt exist"]) + '<br>Then ' + createselect("selectif3",null,["Choose option","OK","NOK"]);
             }
             
-            if(select == 2)
+            if(select == 3)
             {
 
             data = '<p id="ets">No element selected yet : click any element of the page below to select it</p>' + createinput("attribute") + createselect("selectif2",null,["Choose option","equals","not equals","contains","not contains"]) + createinput("value") + '<br>Then ' + createselect("selectif3",null,["Choose option","OK","NOK"]);
             }
             
-            if(select == 3)
+            if(select == 2)
             {
                 
                  data = createselect("selectif2",null,["Choose option","contains","not contains"]) + createinput("value") + '<br>Then ' + createselect("selectif3",null,["Choose option","OK","NOK"]) + "<br><br>";
