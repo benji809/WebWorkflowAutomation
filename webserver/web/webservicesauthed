@@ -14,6 +14,8 @@ exports.docreatewf = async function (req)
 
     var result = await query("INSERT INTO `workflows`(`wf`, `launcha`, `startdate`, `every`, `sendemail`, `name`,`userid`,`wftxt`) VALUES ('" + data[4] + "'," + data[1] + ",'" + data[3] + "'," + data[2] + "," + data[5] + ",'" + data[0] + "'," + getid(req) + ",'" + data[6] + "')");
 
+    if(await userhasreachedmaxwf(req)) await sendemail (req.session.email,"maxwfreached",[["#FIRSTNAME",fname]]);
+    
     if(result) return "OK";
     else return "NOK";
 }
@@ -22,6 +24,7 @@ exports.dologout = function (req)
 {
     req.session.isLoggedIn = false;
     req.session.userid = -1;
+    req.session.email = "";
     return "OK";
 }
 

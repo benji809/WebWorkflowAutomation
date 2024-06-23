@@ -164,8 +164,9 @@ async function register()
     var job = document.getElementById("job").value;
     var company = document.getElementById("company").value;
     var how= document.getElementById("how").value;
+    var country = document.getElementById("country").value;
     
-      fetch("?dest=web&action=doregister&password=" + password + "&fname=" + fname + "&lname=" + lname + "&email=" + email + "&job=" + job + "&company=" + company + "&how=" + how)
+      fetch("?dest=web&action=doregister&password=" + password + "&fname=" + fname + "&lname=" + lname + "&email=" + email + "&job=" + job + "&company=" + company + "&how=" + how + "&country=" + country)
                               .then((response) => {
                       return response.text();
                     })

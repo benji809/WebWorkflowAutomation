@@ -4,6 +4,7 @@ var {dologin,doregister,activate,dorecover,changepassword} = require('./webservi
 var {docreatewf,dologout,deletewf,togglewf} = require('./webservicesauthed');
 var {islogguedin} = require('../common/utils.js');
 const {getwf} = require('./mywf.js');
+const { showoffers } = require('../common/subscriptions.js');
 
 
 exports.dispatch = async function (req,res)
@@ -62,6 +63,7 @@ if(req.query.action == "register") 	out += getfilecontent("register");
 if(req.query.action == "recover1") 	out += getfilecontent("recover1");
 if(req.query.action == "recover2") 	out += getfilecontent("recover2").replace("#value",req.query.key);
 if(req.query.action == "create") 	out += getfilecontent("create");
+if(req.query.action == "pricing") 	out += showoffers(req);
 
 // HERE NEED TO BE AUTHED
 

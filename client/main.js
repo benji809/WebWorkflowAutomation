@@ -111,7 +111,12 @@ return output;
 async function execute(wf)
 {
 
-var browser = await puppeteer.launch();
+	const browser = await puppeteer.launch({
+		args: [
+		  '--incognito',
+		],
+	  });
+	  
 var page = await browser.newPage(); 
   
  

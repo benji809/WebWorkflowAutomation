@@ -1,12 +1,8 @@
 async function loadsif()
 {
-    //var data = createselect("selectif","refreshif",["Add condition","If element","If attribute","If page","If screenshot"]);
     var r = await fetch(baseurl + "sif");
     var data = await r.text();
     document.getElementById("sif").innerHTML = data;
-
-
-
 }
 
 
@@ -17,7 +13,7 @@ document.addEventListener("DOMContentLoaded", () => {
     loadsif();
     const urlParams = new URLSearchParams(window.location.search);
     stream("?dest=emulator&action=getvideo&id=" + id);
-    updateworkflow("Browsing to " + url,url);
+    updateworkflow("Browse " + url,url);
     refreshsize();
     animateimg();
 

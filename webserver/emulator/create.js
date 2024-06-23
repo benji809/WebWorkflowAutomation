@@ -30,7 +30,12 @@ if(!islogguedin(req))
 
 
 
-var browser = await puppeteer.launch(/*{ headless: false }*/);
+const browser = await puppeteer.launch({
+    args: [
+      '--incognito',
+    ],
+  });
+  
 var page = await browser.newPage(); 
 await page.goto(req.query.url);
 await page.setViewport({ width: 1920, height: 1080});

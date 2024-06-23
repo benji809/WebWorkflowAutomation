@@ -66,7 +66,7 @@ exports.getwf = async function (req)
     var id = getid(req);
     var result  = await query("SELECT * FROM `workflows` WHERE `userid` = " + id);
     
-    var out = "Your current offer : " + getcurrentoffer(req).name;
+    var out = "Your current offer : <b>" + getcurrentoffer(req).name + "</b>"
     
     console.log(JSON.stringify(result));
     
