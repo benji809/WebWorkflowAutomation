@@ -1,21 +1,21 @@
-var {query} = require('../common/sql.js');
+var {query,formatforsql,formatfortext} = require('../common/sql.js');
 const {generaterandomid} = require('../common/utils.js');
 var {sendemail} = require('../common/mail.js');
 
 
-exports.activate = async function (req)
+exports.activate = async function (req) // secured
 {
-    var key = req.query.key;
+    var key = req.query.activationkey;
     if(key == "") return;
     var result = await query("SELECT * FROM `users` WHERE activation = '" + key + "'");
     if(result.length == 0) return "This activation key could not be recognised. Please try again or contact us at contact@bestautomation.me.";
     await query("UPDATE `users` SET `activation`='' WHERE activation = '" + key + "'");
-    sendemail(result[3],"activated",[["#FIRSTNAME",result[1]]]);
+    sendemail(result[3],"activated",[["#FIRSTNAME",result[1]]],"Your account is now active, you can log in.");
     return "Your account is now active, you can log in."; 
     
 }
 
-exports.dorecover = async function (req)
+exports.dorecover = async function (req) // secured
 {
     var email = req.query.email;
     if(email == "") return;
@@ -25,11 +25,11 @@ exports.dorecover = async function (req)
 
     var recover= generateRandomid(64);
     await query("UPDATE `users` SET `recover`='" + recover + "' WHERE `email` = '" + email + "'");
-    sendemail(result[3],"recover",[["#FIRSTNAME",result[1]],["#RECOVERKEY",recover]]);
+    sendemail(result[3],"recover",[["#FIRSTNAME",result[1]],["#RECOVERKEY",recover]],"Recover your account");
     return "OK";
 }
 
-exports.dologin = async function (req)
+exports.dologin = async function (req) // secured
 {
 	var email = req.query.email;
     var password = req.query.password;
@@ -57,15 +57,15 @@ exports.dologin = async function (req)
 
 
 
-exports.doregister = async function (req)
+exports.doregister = async function (req) // secured
 {
 
     var email = req.query.email;
     var password = req.query.password;
-    var fname =  req.query.fname;
-    var lname =  req.query.lname;
-    var job =  req.query.job;
-    var company =  req.query.company;
+    var fname =  formatforsql(req.query.fname);
+    var lname =  formatforsql(req.query.lname);
+    var job =  formatforsql(req.query.job);
+    var company =  formatforsql(req.query.company);
     var how =  req.query.how;
     var country =  req.query.country;
     
@@ -80,12 +80,12 @@ exports.doregister = async function (req)
 
     // create account in DB
 
-   // result = await query("INSERT INTO `users`(`email`, `fname`, `lname`, `password`,`activation`,`job`,`company`,`how`,`country`) VALUES ('" + email + "','" + fname +"','" + lname + "','" + password + "','" + activation + "','" + job + "','" + company + "','" + how+ "','" + country+ "')");
+    result = await query("INSERT INTO `users`(`email`, `fname`, `lname`, `password`,`activation`,`job`,`company`,`how`,`country`) VALUES ('" + email + "','" + fname +"','" + lname + "','" + password + "','" + activation + "','" + job + "','" + company + "','" + how+ "','" + country+ "')");
      //echo "INSERT INTO `users`(`email`, `fname`, `lname`, `password`,`activation`,`job`,`company`,`how`) VALUES ('".$email."','".$fname."','".$lname."',".$password.",'".$activation."','".$job."','".$company."','".$how."')";
 
      if(result) 
      {
-     await sendemail (email,"welcome",[["#FIRSTNAME",fname],["#ACTIVATIONKEY",activation]]);
+     await sendemail (email,"welcome",[["#FIRSTNAME",formatfortext(fname)],["#ACTIVATIONKEY",activation]],"Activate your account with this e-mail");
      return "OK";
      }
      else return "NOK";
@@ -95,9 +95,9 @@ exports.doregister = async function (req)
 
 }
 
-exports.changepassword = async function (req)
+exports.changepassword = async function (req) // secured
 {
-    var key = req.query.key;
+    var key = req.query.recoverkey;
     var password = req.query.password;
     if(key== "" || password == "") return;
 
@@ -107,7 +107,7 @@ exports.changepassword = async function (req)
     var result2 = await query("UPDATE `users` SET `recover`='',`password` = '" + password + "' WHERE `recover` = '" + key + "'");
     if(result2) 
     {
-    sendemail(result[3],"recovered",[["#FIRSTNAME",result[1]]]);
+    sendemail(result[3],"recovered",[["#FIRSTNAME",result[1]]],"Password recovered");
     return "OK"; // sending email HERE
     }
     else return "NOK";

@@ -1,5 +1,6 @@
 const puppeteer = require('puppeteer');
 const del = "vpm5985apop";
+var {query} = require('../webserver/sql.js');
 
 
 firstrun();
@@ -91,8 +92,22 @@ async function postresult(id, result)
 		{
 		
 		 	response = await fetch('https://www.bestautomation.me/workflow/?&action=createrun&wfid=' + id + '&result=' + result);
-    			body = await response.text();
-    		}
+    		body = await response.text();
+    	}
+
+		// send mail for first execution
+
+		var r1 = await query("SELECT userid FROM `workflows` WHERE `id` = " + id);
+		var userid = parseInt(r1[0][0]);
+
+
+ 		var r2 = await query("SELECT fwfexecuted,fname FROM `users` WHERE `id` = " + userid);
+    	if(parseInt(r2[0][0]) == 0)
+    	{
+        await sendemail (req.session.email,"fwfexecuted",[["#FIRSTNAME",r2[0][1]]],"Your first workflow was successfully executed");
+        await query("UPDATE `users` SET `fwfcreated` = 1 WHERE `id` = " + id);
+    	}
+	
 }
 
 
@@ -258,6 +273,8 @@ catch (e)
 	console.log("error : " + e);
 	
 	fetch('https://www.bestautomation.me/workflow/?action=createrun&wfid=' + wf[0] + '&result=0&log=' + e);
+
+	
 }
 finally
 {

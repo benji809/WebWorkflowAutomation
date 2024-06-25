@@ -13,13 +13,7 @@ else{
 	var s = sessions.get(req.query.id);
 	if(s == undefined) return;
 
-	if(req.query.action == "getvideo") 
-	{
-	if(s.screenshot != "") return; // already a stream!
-	getvideo(s,res,req);
-	
-	
-	}
+	if(req.query.action == "getvideo")  getvideo(s,res,req);
 	else
 	{
 

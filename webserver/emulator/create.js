@@ -11,6 +11,8 @@ async function createsession(req,res)
 try{
 if(req.query.url == "") return;
 
+if(parseInt(req.query.captcha) != parseInt(req.session.captcha)) {res.write("CNC");return;}
+
 if(islogguedin(req))
 {
 

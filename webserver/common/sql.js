@@ -2,6 +2,17 @@
 const XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest
 
 
+exports.formatforsql = function(input)
+{
+	if(input == undefined) return undefined;
+	return input.replaceAll(" ","***WSP***");
+}
+
+exports.formatfortext = function(input)
+{
+	return input.replaceAll("***WSP***"," ");
+}
+
 exports.query= async function (q)
 {
 
@@ -33,6 +44,9 @@ exports.query= async function (q)
             if(data == "null") return [];
             if(data == "true") return "true";
             if(data == "false") return "false";
+			console.log(data)
+			data = exports.formatfortext(data);
+			console.log(data)
             return JSON.parse(data);
         
    

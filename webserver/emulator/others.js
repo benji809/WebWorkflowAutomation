@@ -1,4 +1,5 @@
 var {getcurrentoffer} = require('../common/subscriptions.js');
+var {screenshots} = require('../common/data.js')
 
 exports.mousedown = async function (s)
 {
@@ -64,6 +65,7 @@ exports.screenshot = async function (s,x,y,w,h,req)
     }});
 
    s.messagetosend.push("SC##" + screenshot);
+   screenshots.set(req.session.id,screenshot);
 
    }
    catch(e)

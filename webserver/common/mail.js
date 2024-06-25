@@ -13,7 +13,7 @@ const transporter = nodemailer.createTransport({
 
 
 
-  exports.sendemail = async function (recipient,tpl,replace)
+  exports.sendemail = async function (recipient,tpl,replace, subject)
   {
 
     try {
@@ -24,7 +24,7 @@ const transporter = nodemailer.createTransport({
     const info = await transporter.sendMail({
         from : "noreply@bestautomation.me",
         to: recipient,
-        subject: fs.readFileSync('common/mails/' + tpl + "_subject", 'utf8') , // Subject line
+        subject: 'Best Automation |' + subject , // Subject line
         text: "", // plain text body
         html: output, // html body
       });

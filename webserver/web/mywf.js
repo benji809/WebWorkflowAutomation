@@ -55,7 +55,7 @@ function seedetail(d)
 {
 
 
-return '<div class="tooltip">&#x1F441;<span class="tooltiptext">*' +  d.replace(",","<br>*") + '</span></div>';
+return '<div class="tooltip">&#x1F441;<span class="tooltiptext">&#8226;' +  d.replaceAll(",","<br>&#8226;") + '</span></div>';
 
 
 }

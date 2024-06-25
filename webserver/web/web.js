@@ -5,7 +5,7 @@ var {docreatewf,dologout,deletewf,togglewf} = require('./webservicesauthed');
 var {islogguedin} = require('../common/utils.js');
 const {getwf} = require('./mywf.js');
 const { showoffers } = require('../common/subscriptions.js');
-
+var captchapng = require('captchapng');
 
 exports.dispatch = async function (req,res)
 {
@@ -49,7 +49,8 @@ if(req.query.action == "docreatewf" && !islogguedin(req)) return ["NC","text/pla
 		
 
 // STUDIO
-if(req.query.action == "studio") return [getfilecontent("studio"),"text/html"];
+if(req.query.action == "studio")  return [getfilecontent("studio"),"text/html"];
+
 
 //IHM
 
@@ -62,7 +63,17 @@ if(req.query.action == "login") 	out += getfilecontent("login");
 if(req.query.action == "register") 	out += getfilecontent("register");
 if(req.query.action == "recover1") 	out += getfilecontent("recover1");
 if(req.query.action == "recover2") 	out += getfilecontent("recover2").replace("#value",req.query.key);
-if(req.query.action == "create") 	out += getfilecontent("create");
+if(req.query.action == "create") 	
+{	// generate captcha here
+	var number = parseInt(Math.random()*900000+100000);
+	req.session.captcha = number;
+	var p = new captchapng(190,50,number); // width,height,numeric captcha
+    p.color(50, 50, 80, 50);  // First color: background (red, green, blue, alpha)
+    p.color(80, 80, 80, 255); // Second color: paint (red, green, blue, alpha)
+ 
+    var img = p.getBase64();
+	out += getfilecontent("create").replace("#CAPTCHAKEY",'data:image/png;base64,' + img);
+}
 if(req.query.action == "pricing") 	out += showoffers(req);
 
 // HERE NEED TO BE AUTHED

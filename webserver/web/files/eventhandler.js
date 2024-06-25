@@ -1,10 +1,5 @@
 function updateworkflow(el1,el2)
 {
-                let select_item = document.getElementById("workflow");
-                let options = select_item.getElementsByTagName('option');
-                if(options.length > 1){
-                if(options[options.length-1].innerText.includes("If")) {alert("Your worklow has already its last action, please save it now to");return;}
-                }
                 
                 var opt = document.createElement("option");
     			opt.value = el1;
@@ -38,9 +33,9 @@ function listenMessage(msg) {
                         var select = document.getElementById('workflowts').options;
                         for(var i=0;i<select.length;i++)
                             {
-                            if(select[i].innerText == "##CO<>")
+                            if(select[i].innerText == "CO<>")
                                 {
-                                  select[i].innerText = "##CO" + el;
+                                  select[i].innerText = "CO" + del + el;
                                   document.getElementById('workflow').options[i].innerText = "Click on " + el;
                                   return;
                                 }

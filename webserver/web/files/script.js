@@ -92,7 +92,7 @@ async function changepassword()
     var password = await strHash(document.getElementById("password1").value);
     var key = document.getElementById("key").value;
     
-          fetch("https://www.bestautomation.me/workflow/?action=changepassword&key=" + key + "&password=" + password)
+          fetch("https://www.bestautomation.me/workflow/?action=changepassword&recoverkey=" + key + "&password=" + password)
                               .then((response) => {
                       return response.text();
                     })
@@ -112,13 +112,14 @@ async function create()
 
     var every = document.getElementById("every").value; // launch every
     var time= document.getElementById("meeting-time").value;
+    var captcha = document.getElementById("captcha").value;
     //var date = new Date(time).toLocaleString("en-US", {timeZone: "(GMT +1:00) Brussels, Copenhagen, Madrid, Paris"})
 
-    if(name == "" || url == "" || sendm == "" || startm == "" || (startm == "1" && dyndiv == "")) return;
+    if(name == "" || url == "" || sendm == "" || startm == "" || (startm == "1" && dyndiv == "") || captcha == "") return;
 
     // starting studio session
 
-    var rep = await fetch("?dest=emulator&action=createsession&url=" + url + "&sendm=" + sendm + "&startm=" + startm + "&every=" + every);
+    var rep = await fetch("?dest=emulator&action=createsession&url=" + url + "&sendm=" + sendm + "&startm=" + startm + "&every=" + every + "&captcha=" + captcha );
     var id = await rep.text();
     if(id.startsWith("OK")) {
             id = id.substring(2);
@@ -128,6 +129,7 @@ async function create()
                 
     }
     else if(id == "MR") alert("You have reached the maximum of workflow created. Consider changing subscription!");
+    else if(id == "CNC") alert("Captcha is not correct");
     else if(id == "SENDMNA") alert("You cannot send mail in this mode");
     else if(id == "STARTMNA") alert("You cannot start workflow automatically in this mode");
     else if(id == "STARTEVERYNA") alert("You cannot choose this every in this mode");

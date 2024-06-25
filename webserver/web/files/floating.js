@@ -33,7 +33,7 @@ document.getElementById("img").addEventListener("mousedown", (e) => {
     if(recordobject === false)
         {
             
-            updateworkflow("Click on <>","##CO<>");
+            updateworkflow("Click on <>","CO<>");
         }
 
 });
@@ -47,13 +47,14 @@ document.addEventListener("keydown", (e) => {
 
 if(oldx > 0.05 && oldy > 0.05) 
     {
-    fetch(baseurl + "keyboard&key=" + e.code);
+        
+        fetch(baseurl + "keyboard&key=" + e.code);
     if(recordobject === false)
         {
             var o1 = document.getElementById('workflowts').options;
             var o2 = document.getElementById('workflow').options;
-            if(o1[o1.length-1].innerText.includes("##IV")) {o1[o1.length-1].innerText += e.code + ";";o2[o2.length-1].innerText += e.key;}
-            else updateworkflow("Enter : " + e.key,"##IV" + e.code);
+            if(o1[o1.length-1].innerText.startsWith("IV")) {o1[o1.length-1].innerText += e.code + ";";o2[o2.length-1].innerText += e.key;}
+            else updateworkflow("Input value : " + e.key,"IV" + del + e.code);
             
         }
 
@@ -100,13 +101,7 @@ function savew()
                 wftxt.push(encodeURIComponent(optionstxt[0].innerText));
                 for (var i=1; i < optionstxt.length ; i++)  wftxt.push(optionstxt[i].innerText);
                 
-
-                var array_out = [urlParams.get('name'),urlParams.get('selectlaunch'),urlParams.get('every'),urlParams.get('meeting-time'),wf,urlParams.get('sendemail'),wftxt];
-                
-				console.log(JSON.stringify(array_out));
-				
-
-                fetch("?dest=web&action=docreatewf&data=" + JSON.stringify(array_out))
+                fetch("?dest=web&action=docreatewf&name=" + urlParams.get('name') + "&startm=" + urlParams.get('selectlaunch') + "&every=" + urlParams.get('every') + "&starttime=" + urlParams.get('meeting-time') + "&wf=" + JSON.stringify(wf) + "&sendemail=" + urlParams.get('sendemail') +  "&wftxt=" + JSON.stringify(wftxt))
                     .then((response) => {
                       return response.text();
                     })
@@ -300,7 +295,7 @@ function add(){
             if(document.getElementById("selectif2").selectedIndex == 1) txt2 = "SCE";
             if(document.getElementById("selectif2").selectedIndex == 2) txt2 = "SCNE";
             var el = document.getElementById("screenshot");
-            txt2 += del + el.xdef + del + el.ydef + del +  el.wdef + del + el.hdef + del + el.src.substring(22);
+            txt2 += del + el.xdef + del + el.ydef + del +  el.wdef + del + el.hdef;
      }
 
     recordobject = false;
@@ -321,6 +316,16 @@ function refreshif()
             if(select == 0) data = "<br><br><br><br><br>";
             else
             {
+
+            let select_item = document.getElementById("workflow");
+            let options = select_item.getElementsByTagName('option');
+            if(options.length > 1){
+            if(options[options.length-1].innerText.includes("If")) {alert("Your worklow has already its last action, you can save, cancel or reset it.");return;}
+            }
+                
+
+
+
             recordobject = true;
             if(select == 1)
             {

@@ -1,5 +1,6 @@
 sessions = new Map();
 offers = new Map();
+screenshots = new Map();
 
 class session{
 	constructor(userid,browser,page,screenshot,messagetosend,timeout){

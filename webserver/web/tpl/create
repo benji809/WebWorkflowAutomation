@@ -8,6 +8,10 @@
             <option  selected="selected" value="1">Yes</option>
             <option value="0">No</option>
             </select><span style="color:red">*</span><br><br>
+
+          <img width="width:190px;height:150px;" src="#CAPTCHAKEY"><br><br>
+          <input  placeholder="captcha" required type="text" id="captcha" name="captcha"><span style="color:red">*</span><br><br>
+         
          <select required onchange="showhide()" name="startm" id="startm">
             <option value="">Start automatically</option>
             <option   value="1">Yes</option>

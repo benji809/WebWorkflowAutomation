@@ -1,23 +1,64 @@
 var {cleandata,getid} = require('../common/utils.js');
-var {query} = require('../common/sql.js');
+var {query,formatforsql} = require('../common/sql.js');
 var {userhasreachedmaxwf,getcurrentoffer} = require('../common/subscriptions.js')
+var {sendemail} = require('../common/mail.js');
+var {screenshots} = require('../common/data.js')
 
 exports.docreatewf = async function (req) 
 {
+
+    try{
+
+        console.log("sc " + req.session.screenshot);
+        console.log("email " + req.session.email);
+
     if(await userhasreachedmaxwf(req)) return "NOK";
-    var data = JSON.parse(req.query.data);
-    data = cleandata(data);
+    
+    var name = formatforsql(req.query.name);if(name == undefined || name == "") return;
+    var startm = cleandata(req.query.startm);if(startm== undefined || startm == "") return;
+
+    if(startm == 1) startm = 2;
+
+    var sendemail = cleandata(req.query.sendemail);if(sendemail== undefined || sendemail == "") return;
+    var every = cleandata(req.query.every);
+
+    var starttime = "";
+    if(req.query.starttime != "") starttime = new Date(req.query.starttime).toISOString().slice(0,19).replace('T',' ') + ".000000";
+
+    var wf = JSON.parse(formatforsql(req.query.wf));
+    var wftxt = JSON.parse(formatforsql(req.query.wftxt));
 
     // check if user has not tampered with data // to be reviwed because it can interfers with other actions...
-    if(getcurrentoffer(req).screenshotallowed == 0 && (data[4].toString().includes("SCE") || data[4].toString().includes("SCNE"))) return "NOK";
-    if(getcurrentoffer(req).attributeallowed == 0 && (data[4].toString().includes("EVE") || data[4].toString().includes("EVNE") || data[4].toString().includes("EVI") || data[4].toString().includes("EVNI"))) return "NOK";
+    if(getcurrentoffer(req).screenshotallowed == 0 && (req.query.wf.includes("SCE") || req.query.wf.includes("SCNE"))) return "NOK";
+    if(getcurrentoffer(req).attributeallowed == 0 && (req.query.wf.includes("EVE") || req.query.wf.includes("EVNE") || req.query.wf.includes("EVI") || req.query.wf.includes("EVNI"))) return "NOK";
 
-    var result = await query("INSERT INTO `workflows`(`wf`, `launcha`, `startdate`, `every`, `sendemail`, `name`,`userid`,`wftxt`) VALUES ('" + data[4] + "'," + data[1] + ",'" + data[3] + "'," + data[2] + "," + data[5] + ",'" + data[0] + "'," + getid(req) + ",'" + data[6] + "')");
 
-    if(await userhasreachedmaxwf(req)) await sendemail (req.session.email,"maxwfreached",[["#FIRSTNAME",fname]]);
+    console.log("sc " + screenshots.get(req.session.id));
+    var result = await query("INSERT INTO `workflows`(`wf`, `launcha`, `startdate`, `every`, `sendemail`, `name`,`userid`,`wftxt`,`screenshot`) VALUES ('" + wf + "'," + startm + ",'" + starttime + "'," + every + "," + sendemail + ",'" + name + "'," + getid(req) + ",'" + wftxt + "','" + screenshots.get(req.session.id) + "')");
+
     
+    var r = await query("SELECT fwfcreated,fname FROM `users` WHERE `id` = " + getid(req));
+
+    if(await userhasreachedmaxwf(req)) await sendemail (req.session.email,"maxwfreached",[["#FIRSTNAME",r[0][1]]],"You have reached the maximum number of workflows.");
+   
+
+    if(parseInt(r[0][0]) == 0)
+    {
+        await sendemail (req.session.email,"fwfcreated",[["#FIRSTNAME",r[0][1]]],"You have created your first workflow.");
+        await query("UPDATE `users` SET `fwfcreated` = 1 WHERE `id` = " + getid(req));
+    }
+
+    req.session.screenshot = "";
+
     if(result) return "OK";
     else return "NOK";
+    }
+    catch(e)
+    {
+        
+        console.error(e);
+        return "NOK";
+    }
 }
 
 exports.dologout = function (req)
@@ -28,7 +69,7 @@ exports.dologout = function (req)
     return "OK";
 }
 
-exports.deletewf = async function (req)
+exports.deletewf = async function (req) //secured
 {
     var key = req.query.key;
     if(key == "") return;
@@ -36,8 +77,8 @@ exports.deletewf = async function (req)
     if(!r1) return "NOK";
     await query("DELETE FROM `runs` WHERE `wfid` =" + key);
     return "OK";
-}
-exports.togglewf = async function (req)
+} 
+exports.togglewf = async function (req) // secured
 {
     var key = req.query.key;
     if(key == "") return;

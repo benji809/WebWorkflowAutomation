@@ -4,7 +4,7 @@ var emulator = require('./emulator/emulator.js');
 var web = require('./web/web.js');
 const sessions = require('express-session');
 var {fetchoffers} = require('./common/subscriptions.js')
-
+var {validation} = require('./common/validations.js')
 
 const oneDay = 1000 * 60 * 60 * 24;
 app.use(sessions({
@@ -20,7 +20,9 @@ app.listen(8000);
 
 app.get('/*', function (req, res) 
 { 
-	console.log("New request : " + JSON.stringify(req.query));
+
+	if(!validation(req.query)) {console.log("not validated");res.end();return;}
+	console.log("New valid request : " + JSON.stringify(req.query));
 
 	if(req.query.dest == "web")
 	{
@@ -34,10 +36,12 @@ app.get('/*', function (req, res)
 	{
 	  // dispatch to emulator
 	  emulator.dispatch(req,res);
-	  return;
+	  return;s
 	  
 	}
 
 	res.end();
 	
 });
+
+
