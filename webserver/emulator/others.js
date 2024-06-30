@@ -57,7 +57,7 @@ exports.screenshot = async function (s,x,y,w,h,req)
 {
   try{
    
-   var screenshot= await s.page.screenshot({ encoding: "base64" , quality: getcurrentoffer(req).imagequality_value, type: 'jpeg', clip: {
+   var screenshot= await s.page.screenshot({ encoding: "base64" , quality : 10, type: 'jpeg', clip: {
       x: parseInt(x),
       y: parseInt(y),
       width: parseInt(w),
@@ -65,7 +65,7 @@ exports.screenshot = async function (s,x,y,w,h,req)
     }});
 
    s.messagetosend.push("SC##" + screenshot);
-   screenshots.set(req.session.id,screenshot);
+   s.screenshot = screenshot;
 
    }
    catch(e)

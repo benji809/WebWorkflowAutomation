@@ -35,15 +35,14 @@ function animateimg()
 
         function mouseup(e) {
             if (grab && screenshot) {
-            grab = false;
-            var el = document.getElementById("screenshot");
-            el.xdef = (rect.x0-e.currentTarget.offsetLeft)/e.currentTarget.offsetWidth;
-            el.ydef = (rect.y0-e.currentTarget.offsetTop)/e.currentTarget.offsetHeight;
-            el.wdef = (rect.x1 - rect.x0)/e.currentTarget.offsetWidth;
-            el.hdef = (rect.y1 - rect.y0)/e.currentTarget.offsetHeight;
-            fetch(baseurl + "screenshot&x=" + el.xdef  + "&y=" +  el.ydef + "&w=" +  el.wdef + "&h=" + el.hdef);
-           
-        }
+                grab = false;
+                var el = document.getElementById("screenshot");
+                el.xdef = (rect.x0-e.currentTarget.offsetLeft)/e.currentTarget.offsetWidth;
+                el.ydef = (rect.y0-e.currentTarget.offsetTop)/e.currentTarget.offsetHeight;
+                el.wdef = (rect.x1 - rect.x0)/e.currentTarget.offsetWidth;
+                el.hdef = (rect.y1 - rect.y0)/e.currentTarget.offsetHeight;
+                fetch(baseurl + "screenshot&x=" + el.xdef  + "&y=" +  el.ydef + "&w=" +  el.wdef + "&h=" + el.hdef);
+             }
 
 
         }

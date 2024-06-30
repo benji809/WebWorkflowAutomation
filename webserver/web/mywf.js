@@ -1,7 +1,8 @@
 var {query} = require('../common/sql.js');
 var {getid} = require('../common/utils.js');
 var {getcurrentoffer} = require('../common/subscriptions.js')
-
+const {workflow,run}  = require ('/home/benji/Documents/WebWorkflowAutomation/orm.js')
+const { Op } =require('sequelize');
 
 
 function displaystartstoppause(r,s)
@@ -54,7 +55,7 @@ function displayauto(r)
 function seedetail(d)
 {
 
-
+if(d == undefined) return d;
 return '<div class="tooltip">&#x1F441;<span class="tooltiptext">&#8226;' +  d.replaceAll(",","<br>&#8226;") + '</span></div>';
 
 
@@ -63,14 +64,12 @@ return '<div class="tooltip">&#x1F441;<span class="tooltiptext">&#8226;' +  d.re
 exports.getwf = async function (req)
 {
     
-    var id = getid(req);
-    var result  = await query("SELECT * FROM `workflows` WHERE `userid` = " + id);
+
+    var resultwf = await workflow.findAndCountAll({ where: { userid: getid(req)} });
+    console.log(resultwf.rows[0].dataValues);
+    var out = "Your current offer : <b>" + (await getcurrentoffer(req)).name + "</b>"
     
-    var out = "Your current offer : <b>" + getcurrentoffer(req).name + "</b>"
-    
-    console.log(JSON.stringify(result));
-    
-    out+=  "<p>You currently have <b>" + result.length + "</b> workflow(s).";
+    out+=  "<p>You currently have <b>" + resultwf.count + "</b> workflow(s).";
     out+=  '<p><input type="button" onclick=\'javascript:window.location.assign("?dest=web&action=create")\' value="Design a new workflow"/></p>';
     
     out+=  '<table style="border-spacing: 7px 0 1px 1;">';
@@ -79,31 +78,29 @@ exports.getwf = async function (req)
     
     out+=  '<tr><td></td><td  style="border-bottom: solid;"><b>Type</b></td><td style="width:400px;border-bottom: solid;"><b>Start/Stop</b></td><td  style="width:350px;border-bottom: solid;"><b>Name</b></td><td  style="width:350px;border-bottom: solid;"><b>Details</b></td><td  style="width:700px;border-bottom: solid;"><b>Creation</b></td><td  style="border-bottom: solid;"><b>Executed</b></td><td  style="width:300px;border-bottom: solid;"><b>Last execution</b></td><td  style="border-bottom: solid;"><b>Delete</b></td></tr>';
     
-    for(var i=0;i<result.length;i++)
+    for(var i=0;i<resultwf.count;i++)
         {
-
-        var result2  = await query("SELECT * FROM runs WHERE wfid = " + result[i][0] + " ORDER BY creationdate DESC LIMIT 10");
-
-        var nb = result2.length;
-
+        var resultrun = await run.findAndCountAll({ where: { workflowid: resultwf.rows[i].id} });
         var lastresult = "NE";
         var output = "";
         var deploy = "";
+        var cwf = resultwf.rows[i].dataValues;
         
-        if(nb > 0) // at least 1 RUN
+        if(resultrun.count > 0) // at least 1 RUN
         {
-            deploy = '<a name="mainwf' + result[i][0] + '" href="javascript:deploy(' + result[i][0] + ')" ><b>+</b></a>';
-            for(var j=0;j<result2.length;j++) 
+            deploy = '<a name="mainwf' + cwf.id  + '" href="javascript:deploy(' + cwf.id + ')" ><b>+</b></a>';
+            for(var j=0;j<resultrun.count;j++) 
                 {
-                     output += '<tr name="wf' + result[i][0] + '" style="display:none;"><td></td><td></td><td>' + displaydate(result2[j][1]) + "</td>" + displayresult(result2[j][2]) + "<td>See log</td><td></td><td></td></tr>";
-                     if(lastresult == "NE") lastresult = result2[j][2];
+                     var crun = resultrun.rows[j].dataValues;
+                     output += '<tr name="wf' + cwf.id + '" style="display:none;"><td></td><td></td><td>' + displaydate(crun[createdAt]) + "</td>" + displayresult(crun.result) + "<td>See log</td><td></td><td></td></tr>";
+                     if(lastresult == "NE") lastresult = crun.result;
                 }
 
             
         }
      
         
-        out+= '<tr><td>' + deploy + '</td><td>' + displayauto(result[i][2]) + '</td><td><a href="javascript:togglewf(' + result[i][0] + ')"><b>' + displaystartstoppause(result[i][2],result[i][5]) + "</b></td><td>" + result[i][7] +"</td><td>" + seedetail(result[i][10]) +" </td><td>" + displaydate(result[i][8]) + "</td><td>" + nb + " times</td>" + displayresult(lastresult) + '<td><a href="javascript:deletewf(' + result[i][0] + ')">❌</a></td></tr>';
+        out+= '<tr><td>' + deploy + '</td><td>' + displayauto(cwf.launcha) + '</td><td><a href="javascript:togglewf(' + cwf.id + ')"><b>' + displaystartstoppause(cwf.launcha,cwf.startm) + "</b></td><td>" + cwf.name +"</td><td>" + seedetail(cwf.wftxt) +" </td><td>" + displaydate(cwf.createdAt) + "</td><td>" + resultrun.count + " times</td>" + displayresult(lastresult) + '<td><a href="javascript:deletewf(' + cwf.id + ')">❌</a></td></tr>';
         out+= output;
             
             

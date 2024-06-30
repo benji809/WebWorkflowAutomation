@@ -1,20 +1,19 @@
 var {cleandata,getid} = require('../common/utils.js');
-var {query,formatforsql} = require('../common/sql.js');
 var {userhasreachedmaxwf,getcurrentoffer} = require('../common/subscriptions.js')
 var {sendemail} = require('../common/mail.js');
 var {screenshots} = require('../common/data.js')
+const {user,sub,workflow,run}  = require ('/home/benji/Documents/WebWorkflowAutomation/orm.js');
+const { launch } = require('puppeteer');
 
 exports.docreatewf = async function (req) 
 {
 
     try{
 
-        console.log("sc " + req.session.screenshot);
-        console.log("email " + req.session.email);
 
     if(await userhasreachedmaxwf(req)) return "NOK";
     
-    var name = formatforsql(req.query.name);if(name == undefined || name == "") return;
+    var name = req.query.name;if(name == undefined || name == "") return;
     var startm = cleandata(req.query.startm);if(startm== undefined || startm == "") return;
 
     if(startm == 1) startm = 2;
@@ -25,33 +24,44 @@ exports.docreatewf = async function (req)
     var starttime = "";
     if(req.query.starttime != "") starttime = new Date(req.query.starttime).toISOString().slice(0,19).replace('T',' ') + ".000000";
 
-    var wf = JSON.parse(formatforsql(req.query.wf));
-    var wftxt = JSON.parse(formatforsql(req.query.wftxt));
+    var wf = JSON.parse(req.query.wf);
+    var wftxt = JSON.parse(req.query.wftxt);
 
     // check if user has not tampered with data // to be reviwed because it can interfers with other actions...
     if(getcurrentoffer(req).screenshotallowed == 0 && (req.query.wf.includes("SCE") || req.query.wf.includes("SCNE"))) return "NOK";
     if(getcurrentoffer(req).attributeallowed == 0 && (req.query.wf.includes("EVE") || req.query.wf.includes("EVNE") || req.query.wf.includes("EVI") || req.query.wf.includes("EVNI"))) return "NOK";
 
 
-    console.log("sc " + screenshots.get(req.session.id));
-    var result = await query("INSERT INTO `workflows`(`wf`, `launcha`, `startdate`, `every`, `sendemail`, `name`,`userid`,`wftxt`,`screenshot`) VALUES ('" + wf + "'," + startm + ",'" + starttime + "'," + every + "," + sendemail + ",'" + name + "'," + getid(req) + ",'" + wftxt + "','" + screenshots.get(req.session.id) + "')");
+    await workflow.create({ 
+        wf : wf,
+        launcha: startm,
+        startdate : starttime,
+        every : every,
+        sendemail : sendemail,
+        name : name,
+        userid: getid(req) ,
+        wftxt : wftxt,
+        screenshot : screenshots.get(req.session.id)
+     });
 
-    
-    var r = await query("SELECT fwfcreated,fname FROM `users` WHERE `id` = " + getid(req));
+     var record = await user.update(
+        { 
+            fwfcreated : 1,
+        },
+        {
+          where: {
+            fwfcreated : 0,
+            id: getid(req)
+          },
+        },
+      );
 
-    if(await userhasreachedmaxwf(req)) await sendemail (req.session.email,"maxwfreached",[["#FIRSTNAME",r[0][1]]],"You have reached the maximum number of workflows.");
-   
+    if(record[0] == 1) await sendemail (req.session.email,"fwfcreated",[["#FIRSTNAME",req.session.fname]],"You have created your first workflow.");
+    if(await userhasreachedmaxwf(req)) await sendemail (req.session.email,"maxwfreached",[["#FIRSTNAME",req.session.fname]],"You have reached the maximum number of workflows.");
 
-    if(parseInt(r[0][0]) == 0)
-    {
-        await sendemail (req.session.email,"fwfcreated",[["#FIRSTNAME",r[0][1]]],"You have created your first workflow.");
-        await query("UPDATE `users` SET `fwfcreated` = 1 WHERE `id` = " + getid(req));
-    }
+    screenshots.delete(req.session.id);
 
-    req.session.screenshot = "";
-
-    if(result) return "OK";
-    else return "NOK";
+    return "OK";
     }
     catch(e)
     {
@@ -73,26 +83,40 @@ exports.deletewf = async function (req) //secured
 {
     var key = req.query.key;
     if(key == "") return;
-    var r1 = await query("DELETE FROM `workflows` WHERE `id` = " + key + " AND `userid` = " + getid(req));
-    if(!r1) return "NOK";
-    await query("DELETE FROM `runs` WHERE `wfid` =" + key);
+
+    await workflow.delete({
+        where: {
+          id: key
+        },
+      });
+
+    await run.delete({
+        where: {
+          workflowid: key
+        },
+      });
+
+      
     return "OK";
 } 
 exports.togglewf = async function (req) // secured
 {
     var key = req.query.key;
     if(key == "") return;
-    
-    var row = await query("SELECT * FROM `workflows` WHERE id =" + key + " AND `userid` =" + getid(req));
-    
-    if(row.length == 0) return "NOK";
+
+    var row = await workflow.findOne( { where: {
+        id: key,userid : getid(req)
+      }})
+
+    if(row === null) return "NOK";
+
     var result = false;
 
-    if(row[0][2] == 2) result = await query("UPDATE `workflows` SET `launcha`= 1 WHERE `id` = " + key);
-    else if(row[0][2] == 1) result = await query("UPDATE `workflows` SET `launcha`= 2 WHERE `id` = " + key);
-    else if(row[0][5] == 0) result = await query("UPDATE `workflows` SET `startm`= 1 WHERE `id` = " + key);
-    else if(row[0][5] == 1) result = await query("UPDATE `workflows` SET `startm`= 0 WHERE `id` = " + key);
-    if(result) return "OK";
-    else return "NOK";
+    if(row.launcha == 2) result = await row.update({launcha : 1});
+    else if(row.launcha  == 1) result = await row.update({launcha : 2});
+    else if(row.startm == 0) result = await row.update({startm : 1});
+    else if(row.startm == 1) result = await row.update({startm : 0});
+
+    return "OK";
 }
 

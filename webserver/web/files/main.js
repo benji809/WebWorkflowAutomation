@@ -1,4 +1,4 @@
-const baseurl = "?dest=emulator&id=" + id + "&action=";
+const baseurl = "?dest=emulator&action=";
 var x = 0,y = 0,dy = 0;
 var oldx = 0;
 var oldy = 0;

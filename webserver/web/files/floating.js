@@ -71,6 +71,7 @@ document.getElementById("img").addEventListener("DOMMouseScroll", (event) => {
  
 });
 
+window.onresize = refreshsize;
 
 
 

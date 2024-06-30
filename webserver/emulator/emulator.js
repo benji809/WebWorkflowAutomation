@@ -10,7 +10,7 @@ if(req.query.action == "createsession") createsession(req,res);
 else{
 
 	if(req.query.id == "") return;
-	var s = sessions.get(req.query.id);
+	var s = sessions.get(req.session.id);
 	if(s == undefined) return;
 
 	if(req.query.action == "getvideo")  getvideo(s,res,req);

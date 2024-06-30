@@ -54,7 +54,7 @@ return true;
 
 function checkstring(input)
 {
-	if(input == undefined) return true;
+	if(input == undefined || input == "") return true;
 	if(typeof input !== 'string') return false;
 	if(input.length > 15 || input.length < 3) return false;
 	const regex = /[A-Za-z]+/gm;
@@ -64,7 +64,7 @@ function checkstring(input)
 
 function checkstringwithspace(input)
 {
-	if(input == undefined) return true;
+	if(input == undefined || input == "") return true;
 	if(typeof input !== 'string') return false;
 	if(input.length > 15 || input.length < 3) return false;
 	const regex = /[A-Za-z ]+/gm;

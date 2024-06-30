@@ -40,14 +40,23 @@ exports.query= async function (q)
 		
 	} )
 
-            var data = await myPromise
+	var data = await myPromise
+		try{
+
+           
             if(data == "null") return [];
             if(data == "true") return "true";
             if(data == "false") return "false";
-			console.log(data)
 			data = exports.formatfortext(data);
-			console.log(data)
             return JSON.parse(data);
+
+		}
+
+		catch(e)
+		{
+			console.log(q + "/" + data + "/" + e)
+
+		}
         
    
 

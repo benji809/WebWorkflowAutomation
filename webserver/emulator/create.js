@@ -1,4 +1,4 @@
-const {generaterandomid,islogguedin} = require('../common/utils.js');
+const {islogguedin} = require('../common/utils.js');
 const {session,sessions} = require('../common/data.js');
 const puppeteer = require("puppeteer");
 const {killsession} = require('./utils.js')
@@ -41,8 +41,6 @@ const browser = await puppeteer.launch({
 var page = await browser.newPage(); 
 await page.goto(req.query.url);
 await page.setViewport({ width: 1920, height: 1080});
-var s = generaterandomid(64);
-
 
      await page.exposeFunction('processClick', (data) => {
       sessions.get(s).messagetosend.push("##CO" + data);
@@ -107,12 +105,12 @@ var getNodeTreeXPath = function(node) {
 
     
     
-    sessions.set(s,new session("",browser,page,"",[],t));
+    sessions.set(req.session.id,new session("",browser,page,"",[],t));
     res.writeHead(200, {
             'Content-Type': 'text/html; charset=utf-8',
             'Cache-Control': 'no-cache',
             'Access-Control-Allow-Origin':'*'});
-    res.write("OK" + s);
+    res.write("OK");
     
     }
     catch(e)

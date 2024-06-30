@@ -1,45 +1,52 @@
-var {offers,offer} = require ('./data');
+var {offers/*,offer*/} = require ('./data');
 var {query} = require('../common/sql.js');
 var {islogguedin} = require('./utils.js');
+var {offer,sub}  = require ('/home/benji/Documents/WebWorkflowAutomation/orm.js')
+const { Op } =require('sequelize');
 
-exports.fetchoffers = async function()
+exports.getcurrentoffer = async function(req)
 {
-    var result = await query("SELECT * FROM offers");
-    for(var i=0;i<result.length;i++)
-        {
-            var o = new offer();
-            o.id = parseInt(result[i][0]);
-            o.name = result[i][1];
-            o.nbmaxworkflow = parseInt(result[i][2]);
-            o.workflowautomatedallowed = parseInt(result[i][3]);
-            o.price = parseFloat(result[i][4]);
-            o.sendemail = parseInt(result[i][5]);
-            o.everymin = parseInt(result[i][6]);
-            o.imagequality_value = parseInt(result[i][7]);
-            o.imagequality_text = result[i][8];
-            o.timeout = parseInt(result[i][9]);
-            o.attributeallowed = parseInt(result[i][10]);
-            o.screenshotallowed = parseInt(result[i][11]);
-            o.hotline = result[i][12];
 
 
-            offers.set(o.id,o);
-        } 
-}
+    if(islogguedin(req)) 
+    {    
+        var anysub = await sub.findOne({
+            where: {
+                userid: req.session.userid,
+              
+                startdate: {
+                [Op.gte]: new Date()
+              },
+              enddate: {
+                [Op.lte]: new Date()
+              },
+            },
+          });
 
-exports.getcurrentoffer = function(req)
-{
-    if(islogguedin(req)) return offers.get(req.session.offerid);
-    else return offers.get(0);
+       
+         var offerid;
+         if(anysub === null) offerid = 1;
+         else offerid = anysub.offerid;
+         return await offer.findOne({ where: { id: offerid } });
+
+
+
+    }
+    else return await offer.findOne({ where: { id: 0} });
 }
 
 exports.userhasreachedmaxwf = async function (req)
 {
-    var nbcurrentwf = await query("SELECT COUNT(*) FROM workflows WHERE userid = '" + req.session.userid + "'");
-    if(nbcurrentwf.length == 0) nbcurrentwf = 0;
-    else nbcurrentwf = parseInt(nbcurrentwf[0][0]);
-    var nbauthorised = (await exports.getcurrentoffer(req)).nbmaxworkflow;
-    if(nbcurrentwf >= nbauthorised) return true;
+    const user = await user.findOne({
+        where: {
+          id: req.session.userid,
+        },
+      });
+
+    var wf = user.getWorkflow();
+    var nbauthorized = await exports.getcurrentoffer(req).nbmaxworkflow;
+
+    if(wf.length >= nbauthorised) return true;
     return false;
 }
 

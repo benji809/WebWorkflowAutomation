@@ -121,9 +121,9 @@ async function create()
 
     var rep = await fetch("?dest=emulator&action=createsession&url=" + url + "&sendm=" + sendm + "&startm=" + startm + "&every=" + every + "&captcha=" + captcha );
     var id = await rep.text();
-    if(id.startsWith("OK")) {
-            id = id.substring(2);
-            window.location.replace("?dest=web&action=studio&url=" + url+ "&id=" + id + "&name=" + name + "&sendemail=" + sendm + "&selectlaunch=" + startm + "&every=" + every + "&meeting-time=" + time);
+    if(id == "OK") {
+
+            window.location.replace("?dest=web&action=studio&url=" + url+ "&name=" + name + "&sendemail=" + sendm + "&selectlaunch=" + startm + "&every=" + every + "&meeting-time=" + time);
 
            // var array_out = [urlParams.get('name'),urlParams.get('selectlaunch'),urlParams.get('every'),urlParams.get('meeting-time'),wf,urlParams.get('sendemail')];
                 
