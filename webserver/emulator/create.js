@@ -17,9 +17,9 @@ if(islogguedin(req))
 {
 
     if(await userhasreachedmaxwf(req)) {res.write("MR");return;}
-    if(getcurrentoffer(req).sendemail == 0 && req.query.sendm == "1") {res.write("SENDMNA");return;}
-    if(getcurrentoffer(req).workflowautomatedallowed == 0 && req.query.startm == "1") {res.write("STARTMNA");return;}
-    if(getcurrentoffer(req).everymin > parseInt(req.query.every)) {res.write("STARTEVERYNA");return;}
+    if((await getcurrentoffer(req)).sendemail == 0 && req.query.sendm == "1") {res.write("SENDMNA");return;}
+    if((await getcurrentoffer(req)).workflowautomatedallowed == 0 && req.query.startm == "1") {res.write("STARTMNA");return;}
+    if((await getcurrentoffer(req)).everymin > parseInt(req.query.every)) {res.write("STARTEVERYNA");return;}
 }
 
 if(!islogguedin(req))
@@ -43,7 +43,7 @@ await page.goto(req.query.url);
 await page.setViewport({ width: 1920, height: 1080});
 
      await page.exposeFunction('processClick', (data) => {
-      sessions.get(s).messagetosend.push("##CO" + data);
+      sessions.get(req.session.id).messagetosend.push("##CO" + data);
     });
 
    await page.evaluate(() => {
@@ -100,7 +100,7 @@ var getNodeTreeXPath = function(node) {
     
     
 
-    var t = setTimeout(killsession, getcurrentoffer(req).timeout*1000,s);
+    var t = setTimeout(killsession, (await getcurrentoffer(req)).timeout*1000,req.session.id);
  
 
     

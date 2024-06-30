@@ -90,7 +90,7 @@ exports.scroll = async function (s,dy)
 }
 
 
-exports.sif = function(req,res)
+exports.sif = async function(req,res)
 {
    var options = ["Add condition","If element","If page","If attribute","If screenshot"];
    var data = '<select onChange="refreshif()" id="selectif">';
@@ -98,18 +98,20 @@ exports.sif = function(req,res)
    for(var i= 0;i<options.length;i++) 
    {
       var disabled = "";
-      if(options[i] == "If screenshot" && getcurrentoffer(req).screenshotallowed == 0) disabled = "disabled";
-      if(options[i] == "If attribute" && getcurrentoffer(req).attributeallowed == 0) disabled = "disabled";
+      if(options[i] == "If screenshot" && (await getcurrentoffer(req)).screenshotallowed == 0) disabled = "disabled";
+      if(options[i] == "If attribute" && (await getcurrentoffer(req)).attributeallowed == 0) disabled = "disabled";
       data += "<option " + disabled + " value = '" + i + "'>" + options[i] + "</option>";
    }
     data += "</select>";
     res.write(data);
+    console.log(data);
+   
 }
 
 exports.getvideo = async function (s,res,req)
 {
 	
-      var quality = getcurrentoffer(req).imagequality_value;
+      var quality = (await getcurrentoffer(req)).imagequality_value;
 		
 		res.writeHead(400, {
 		    'Content-Type': 'text/event-stream',

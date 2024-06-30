@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", () => {
     
     loadsif();
     const urlParams = new URLSearchParams(window.location.search);
-    stream("?dest=emulator&action=getvideo&id=" + id);
+    stream("?dest=emulator&action=getvideo");
     updateworkflow("Browse " + url,url);
     refreshsize();
     animateimg();

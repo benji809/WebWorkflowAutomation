@@ -11,5 +11,4 @@ var counttoshow = 0;
 const del = "vpm5985apop";
 
 let params = new URLSearchParams(document.location.search);
- var url = params.get("url");
- var id = params.get("id");
+var url = params.get("url");

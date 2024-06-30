@@ -1,7 +1,7 @@
 var {offers/*,offer*/} = require ('./data');
 var {query} = require('../common/sql.js');
 var {islogguedin} = require('./utils.js');
-var {offer,sub}  = require ('/home/benji/Documents/WebWorkflowAutomation/orm.js')
+var {offer,sub,user,workflow}  = require ('/home/benji/Documents/WebWorkflowAutomation/orm.js')
 const { Op } =require('sequelize');
 
 exports.getcurrentoffer = async function(req)
@@ -37,16 +37,15 @@ exports.getcurrentoffer = async function(req)
 
 exports.userhasreachedmaxwf = async function (req)
 {
-    const user = await user.findOne({
+    const currentnb = await workflow.count({
         where: {
-          id: req.session.userid,
+          userid: req.session.userid,
         },
       });
 
-    var wf = user.getWorkflow();
-    var nbauthorized = await exports.getcurrentoffer(req).nbmaxworkflow;
+    var nbauthorized = (await exports.getcurrentoffer(req)).nbmaxworkflow;
 
-    if(wf.length >= nbauthorised) return true;
+    if(currentnb >= nbauthorized) return true;
     return false;
 }
 

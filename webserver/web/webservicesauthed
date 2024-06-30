@@ -1,9 +1,10 @@
 var {cleandata,getid} = require('../common/utils.js');
 var {userhasreachedmaxwf,getcurrentoffer} = require('../common/subscriptions.js')
 var {sendemail} = require('../common/mail.js');
-var {screenshots} = require('../common/data.js')
+var {sessions} = require('../common/data.js')
 const {user,sub,workflow,run}  = require ('/home/benji/Documents/WebWorkflowAutomation/orm.js');
 const { launch } = require('puppeteer');
+const {killsession} = require ('../emulator/utils.js')
 
 exports.docreatewf = async function (req) 
 {
@@ -31,6 +32,10 @@ exports.docreatewf = async function (req)
     if(getcurrentoffer(req).screenshotallowed == 0 && (req.query.wf.includes("SCE") || req.query.wf.includes("SCNE"))) return "NOK";
     if(getcurrentoffer(req).attributeallowed == 0 && (req.query.wf.includes("EVE") || req.query.wf.includes("EVNE") || req.query.wf.includes("EVI") || req.query.wf.includes("EVNI"))) return "NOK";
 
+    var screenshot = "";
+
+    if(req.query.wf.includes("SCE") || req.query.wf.includes("SCNE")) screenhot = sessions.get(req.session.id).screenshot;
+
 
     await workflow.create({ 
         wf : wf,
@@ -41,7 +46,7 @@ exports.docreatewf = async function (req)
         name : name,
         userid: getid(req) ,
         wftxt : wftxt,
-        screenshot : screenshots.get(req.session.id)
+        screenshot : screenshot
      });
 
      var record = await user.update(
@@ -59,7 +64,7 @@ exports.docreatewf = async function (req)
     if(record[0] == 1) await sendemail (req.session.email,"fwfcreated",[["#FIRSTNAME",req.session.fname]],"You have created your first workflow.");
     if(await userhasreachedmaxwf(req)) await sendemail (req.session.email,"maxwfreached",[["#FIRSTNAME",req.session.fname]],"You have reached the maximum number of workflows.");
 
-    screenshots.delete(req.session.id);
+    killsession(req.session.id);
 
     return "OK";
     }
@@ -84,13 +89,13 @@ exports.deletewf = async function (req) //secured
     var key = req.query.key;
     if(key == "") return;
 
-    await workflow.delete({
+    await workflow.destroy({
         where: {
           id: key
         },
       });
 
-    await run.delete({
+    await run.destroy({
         where: {
           workflowid: key
         },

@@ -9,7 +9,6 @@ exports.dispatch = async function (req,res)
 if(req.query.action == "createsession") createsession(req,res);
 else{
 
-	if(req.query.id == "") return;
 	var s = sessions.get(req.session.id);
 	if(s == undefined) return;
 
@@ -35,14 +34,14 @@ else{
 		if(req.query.action == "mouseup") mouseup(s);
 		if(req.query.action == "screenshot") screenshot(s,req.query.x*1920,req.query.y*1080,req.query.w*1920,req.query.h*1080,req);
 		if(req.query.action == "kill") killsession(req.query.id);
-		if(req.query.action == "sif") sif(req,res);
+		if(req.query.action == "sif") await sif(req,res);
 		
 		
 		// update the timer
 		
 		    
    clearTimeout(s.timeout);
-   s.timeout = setTimeout(killsession, getcurrentoffer(req).timeout*1000,req.query.id);
+   s.timeout = setTimeout(killsession, (await getcurrentoffer(req)).timeout*1000,req.session.id);
 
 
 
