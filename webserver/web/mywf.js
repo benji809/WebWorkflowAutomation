@@ -56,7 +56,17 @@ function seedetail(d)
 {
 
 if(d == undefined) return d;
-return '<div class="tooltip">&#x1F441;<span class="tooltiptext">&#8226;' +  d.replaceAll(",","<br>&#8226;") + '</span></div>';
+var out = '<div class="tooltip">&#x1F441;<span class="tooltiptext">';
+
+for(var i=0;i<d.length;i++)
+{
+
+out += '&#8226;' + d[i];
+if(i != d.length -1) out += "<br>";
+}
+
+out += '</span></div>';
+return out;
 
 
 }
@@ -65,8 +75,8 @@ exports.getwf = async function (req)
 {
     
 
-    var resultwf = await workflow.findAndCountAll({ where: { userid: getid(req)} });
-    console.log(resultwf.rows[0].dataValues);
+    var resultwf = await workflow.findAndCountAll({ where: { userid: getid(req)},   attributes: { exclude: ['screenshot','wf'] } });
+
     var out = "Your current offer : <b>" + (await getcurrentoffer(req)).name + "</b>"
     
     out+=  "<p>You currently have <b>" + resultwf.count + "</b> workflow(s).";
@@ -92,7 +102,7 @@ exports.getwf = async function (req)
             for(var j=0;j<resultrun.count;j++) 
                 {
                      var crun = resultrun.rows[j].dataValues;
-                     output += '<tr name="wf' + cwf.id + '" style="display:none;"><td></td><td></td><td>' + displaydate(crun[createdAt]) + "</td>" + displayresult(crun.result) + "<td>See log</td><td></td><td></td></tr>";
+                     output += '<tr name="wf' + cwf.id + '" style="display:none;"><td></td><td></td><td>' + displaydate(crun.createdAt) + "</td>" + displayresult(crun.result) + "<td>See log</td><td></td><td></td></tr>";
                      if(lastresult == "NE") lastresult = crun.result;
                 }
 

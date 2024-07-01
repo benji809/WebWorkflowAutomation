@@ -15,12 +15,13 @@ exports.getcurrentoffer = async function(req)
                 userid: req.session.userid,
               
                 startdate: {
-                [Op.gte]: new Date()
-              },
-              enddate: {
                 [Op.lte]: new Date()
               },
-            },
+
+              [Op.or]: [{enddate: {[Op.gte]: new Date()}}, { enddate: null }],
+
+             
+            }
           });
 
        

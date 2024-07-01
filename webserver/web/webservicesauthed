@@ -1,6 +1,6 @@
 var {cleandata,getid} = require('../common/utils.js');
 var {userhasreachedmaxwf,getcurrentoffer} = require('../common/subscriptions.js')
-var {sendemail} = require('../common/mail.js');
+const {sendemail} = require('../common/mail.js');
 var {sessions} = require('../common/data.js')
 const {user,sub,workflow,run}  = require ('/home/benji/Documents/WebWorkflowAutomation/orm.js');
 const { launch } = require('puppeteer');
@@ -19,22 +19,22 @@ exports.docreatewf = async function (req)
 
     if(startm == 1) startm = 2;
 
-    var sendemail = cleandata(req.query.sendemail);if(sendemail== undefined || sendemail == "") return;
+    var sm = cleandata(req.query.sendemail);if(sm == undefined || sm == "") return;
     var every = cleandata(req.query.every);
 
-    var starttime = "";
+    var starttime = null;
     if(req.query.starttime != "") starttime = new Date(req.query.starttime).toISOString().slice(0,19).replace('T',' ') + ".000000";
 
     var wf = JSON.parse(req.query.wf);
     var wftxt = JSON.parse(req.query.wftxt);
 
     // check if user has not tampered with data // to be reviwed because it can interfers with other actions...
-    if(getcurrentoffer(req).screenshotallowed == 0 && (req.query.wf.includes("SCE") || req.query.wf.includes("SCNE"))) return "NOK";
-    if(getcurrentoffer(req).attributeallowed == 0 && (req.query.wf.includes("EVE") || req.query.wf.includes("EVNE") || req.query.wf.includes("EVI") || req.query.wf.includes("EVNI"))) return "NOK";
+    if((await getcurrentoffer(req)).screenshotallowed == 0 && (req.query.wf.includes("SCE") || req.query.wf.includes("SCNE"))) return "NOK";
+    if((await getcurrentoffer(req)).attributeallowed == 0 && (req.query.wf.includes("EVE") || req.query.wf.includes("EVNE") || req.query.wf.includes("EVI") || req.query.wf.includes("EVNI"))) return "NOK";
 
     var screenshot = "";
 
-    if(req.query.wf.includes("SCE") || req.query.wf.includes("SCNE")) screenhot = sessions.get(req.session.id).screenshot;
+    if(req.query.wf.includes("SCE") || req.query.wf.includes("SCNE")) screenshot = sessions.get(req.session.id).screenshot;
 
 
     await workflow.create({ 
@@ -42,11 +42,12 @@ exports.docreatewf = async function (req)
         launcha: startm,
         startdate : starttime,
         every : every,
-        sendemail : sendemail,
+        sendemail : sm,
         name : name,
         userid: getid(req) ,
         wftxt : wftxt,
-        screenshot : screenshot
+        screenshot : screenshot,
+        startm : 0
      });
 
      var record = await user.update(

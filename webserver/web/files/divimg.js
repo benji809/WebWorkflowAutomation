@@ -18,6 +18,7 @@ function animateimg()
         function mousedown(e) {
             if(screenshot)
             {
+                document.getElementById("screenshot").src="?dest=web&action=getfile&file=question.jpg";
                 grab = true;
                 rect.x0 = e.clientX;
                 rect.y0 = e.clientY;
@@ -37,10 +38,12 @@ function animateimg()
             if (grab && screenshot) {
                 grab = false;
                 var el = document.getElementById("screenshot");
-                el.xdef = (rect.x0-e.currentTarget.offsetLeft)/e.currentTarget.offsetWidth;
-                el.ydef = (rect.y0-e.currentTarget.offsetTop)/e.currentTarget.offsetHeight;
-                el.wdef = (rect.x1 - rect.x0)/e.currentTarget.offsetWidth;
-                el.hdef = (rect.y1 - rect.y0)/e.currentTarget.offsetHeight;
+                var img = document.getElementById("img");
+                el.xdef = (rect.x0-e.currentTarget.offsetLeft)/img.width;
+                el.ydef = (rect.y0-e.currentTarget.offsetTop)/img.height;
+                el.wdef = (rect.x1 - rect.x0)/img.width;
+                el.hdef = (rect.y1 - rect.y0)/img.height;
+                  
                 fetch(baseurl + "screenshot&x=" + el.xdef  + "&y=" +  el.ydef + "&w=" +  el.wdef + "&h=" + el.hdef);
              }
 

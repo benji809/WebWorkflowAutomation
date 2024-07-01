@@ -11,14 +11,13 @@ async function loadsif()
 document.addEventListener("DOMContentLoaded", () => {
     
     loadsif();
-    const urlParams = new URLSearchParams(window.location.search);
     stream("?dest=emulator&action=getvideo");
     updateworkflow("Browse " + url,url);
     refreshsize();
     animateimg();
 
 document.getElementById("img").addEventListener("mousemove", (e) => {
-    if(screenshot) return;
+
     x = (e.pageX - e.currentTarget.offsetLeft)/e.currentTarget.offsetWidth; 
     y = (e.pageY - e.currentTarget.offsetTop)/e.currentTarget.offsetHeight;
     oldx = x;
@@ -349,7 +348,7 @@ function refreshif()
             if(select == 4) // screenshot
             {
                 screenshot = true;  
-                data = '<p>If screenshot </p><img id="screenshot" src="?dest=web&action=getfile&file=question.jpg" width="50" height="50">' + createselect("selectif2",null,["Choose option","is the same","is different"]) + '<br>Then ' + createselect("selectif3",null,["Choose option","OK","NOK"]) + "<br><br>";
+                data = '<p>If screenshot :</p><img id="screenshot" src="?dest=web&action=getfile&file=question.jpg" width="50" height="50">' + createselect("selectif2",null,["Choose option","is the same","is different"]) + '<br>Then ' + createselect("selectif3",null,["Choose option","OK","NOK"]) + "<br><br>";
             }
 
             data += '<button onclick="add()">Add</button>';

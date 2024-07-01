@@ -73,7 +73,7 @@ const workflow = sequelize.define(
     },
     
     wf: {
-      type: DataTypes.STRING,
+      type: DataTypes.JSON,
       allowNull: false,
     },
     launcha : {
@@ -105,7 +105,7 @@ const workflow = sequelize.define(
       allowNull: false,
     },
     wftxt: {
-      type: DataTypes.STRING,
+      type: DataTypes.JSON,
       allowNull: false,
     },
     screenshot: {
@@ -232,7 +232,7 @@ const sub = sequelize.define(
     },
     enddate: {
       type: DataTypes.TIME,
-      allowNull: false,
+      allowNull: true,
     }
   }
 );
